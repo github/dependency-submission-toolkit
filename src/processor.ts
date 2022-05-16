@@ -98,23 +98,15 @@ export async function readDependencies(
           std_err += data.toString()
         }
       }
-      options.cwd = '././'
 
-      const manifestCmdArr = manifestInfo.command.split(' ')
-      return exec
-        .exec(
-          manifestCmdArr[0],
-          manifestCmdArr.slice(1, manifestCmdArr.length),
-          options
-        )
-        .then((res) => {
-          if (std_err) {
-            console.log(std_err)
-          }
+      return exec.exec(manifestInfo.command, undefined, options).then((res) => {
+        if (std_err) {
+          console.log(std_err)
+        }
 
-          const entries = dependenciesProcessorFunc(output)
-          return entries
-        })
+        const entries = dependenciesProcessorFunc(output)
+        return entries
+      })
     }
   } catch (error) {
     if (error instanceof Error) {
