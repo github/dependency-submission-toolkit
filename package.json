@@ -1,6 +1,6 @@
 {
   "name": "@github/dependency-submission-toolkit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A TypeScript library for creating dependency snapshots.",
   "main": "dist/index.js",
   "prepare": "npm run build",
