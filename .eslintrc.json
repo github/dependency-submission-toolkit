@@ -1,28 +1,37 @@
 {
     "env": {
         "browser": true,
-        "es2021": true
+        "es2021": true,
+        "jest": true
     },
     "extends": [
-        "standard",
-        "plugin:prettier/recommended"
+        "plugin:github/recommended", 
+        "plugin:github/typescript"
     ],
-    "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 12,
         "sourceType": "module"
     },
     "plugins": [
-        "@typescript-eslint"
+        "github"
     ],
     "rules": {
     },
     "overrides": [
         {
-            "files": ["*.js", "*.ts"],
+            "files": ["test/**"],
             "rules": {
-                "no-unused-vars": "off"
+              "i18n-text/no-en": "off",
+              "filenames/match-regex": "off"
             }
-        }
-    ]
+          },
+          {
+            "files": ["jest.config.js"],
+            "rules": {
+              "filenames/match-regex": "off",
+              "import/no-commonjs": "off"
+            }
+          }
+    ],
+    "ignorePatterns": ["dist/"]
 }
