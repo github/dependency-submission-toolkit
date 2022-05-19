@@ -6,8 +6,7 @@
 
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
-import * as github from '@actions/github'
-import { readFile } from 'fs'
+import * as fs from 'fs'
 
 export class Entry {
   public name: string
@@ -69,14 +68,56 @@ export interface ProcessDependenciesContent {
   (contents: string): ParsedDependencies
 }
 
+export interface ManifestCommand {
+  command: string
+  workingDirs: string[]
+}
+
+async function execCmd(command: string, cwd: string): Promise<string> {
+  const cur_dir = process.cwd()
+  process.chdir(cwd)
+
+  let output = ''
+  let std_err = ''
+
+  const options: exec.ExecOptions = {}
+  options.listeners = {
+    stdout: (data: Buffer) => {
+      output += data.toString()
+    },
+    stderr: (data: Buffer) => {
+      std_err += data.toString()
+    }
+  }
+
+  return exec.exec(command, undefined, options).then((_) => {
+    if (std_err) {
+      console.log(std_err)
+    }
+
+    process.chdir(cur_dir)
+    return output
+  })
+}
+
+async function runCommand(command: string | ManifestCommand): Promise<string[]> {
+  if (typeof command === 'string') {
+    return [await execCmd(command, process.cwd())]
+  } else {
+    return command.workingDirs.map((dir) => {
+      await execCmd(command.command, dir)
+    })
+  }
+}
+
 export async function readDependencies(
   dependenciesProcessorFunc: ProcessDependenciesContent,
-  manifestInfo: { path?: string; command?: string } = {}
+  manifestInfo: { path?: string; command?: string | ManifestCommand } = {}
 ): Promise<ParsedDependencies | undefined> {
   try {
     if (manifestInfo.path !== undefined) {
       return new Promise<string>((resolve, reject) => {
-        readFile(manifestInfo.path!, {}, (err, data) => {
+        fs.readFile(manifestInfo.path!, {}, (err, data) => {
           if (err) reject(err)
           resolve(data.toString())
         })
@@ -86,27 +127,7 @@ export async function readDependencies(
     }
 
     if (manifestInfo.command !== undefined) {
-      let output = ''
-      let std_err = ''
-
-      const options: exec.ExecOptions = {}
-      options.listeners = {
-        stdout: (data: Buffer) => {
-          output += data.toString()
-        },
-        stderr: (data: Buffer) => {
-          std_err += data.toString()
-        }
-      }
-
-      return exec.exec(manifestInfo.command, undefined, options).then((res) => {
-        if (std_err) {
-          console.log(std_err)
-        }
-
-        const entries = dependenciesProcessorFunc(output)
-        return entries
-      })
+      return dependenciesProcessorFunc(await runCommand(manifestInfo.command))
     }
   } catch (error) {
     if (error instanceof Error) {
