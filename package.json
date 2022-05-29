@@ -16,6 +16,7 @@
     "package": "ncc build --source-map --license licenses.txt",
     "prepublishOnly": "npm run build",
     "test": "jest",
+    "test:watch": "jest --watch",
     "all": "npm run build && npm run format && npm run lint && npm run package && npm test"
   },
   "repository": {
@@ -34,9 +35,11 @@
     "@actions/exec": "^1.1.1",
     "@actions/github": "^5.0.0",
     "@octokit/rest": "^18.12.0",
-    "openapi-typescript": "^5.2.0"
+    "openapi-typescript": "^5.2.0",
+    "packageurl-js": "0.0.6"
   },
   "devDependencies": {
+    "@types/jest": "^27.5.1",
     "@types/js-yaml": "^4.0.5",
     "@types/node": "^16.10.5",
     "@typescript-eslint/eslint-plugin": "^5.16.0",
