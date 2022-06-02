@@ -3,98 +3,11 @@ import { Context } from '@actions/github/lib/context'
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { Octokit } from '@octokit/rest'
+import { Dependency } from './dependency'
 
 /*
 Core functionality for creating a snapshot of a project's dependencies.
 */
-
-// A notation of whether a dependency is requested directly
-// by this manifest, or is a dependency of another dependency.
-enum DependencyRelationship {
-  direct = 'direct',
-  indirect = 'indirect'
-}
-
-// A notation of whether the dependency is required for the primary
-// build artifact (runtime), or is only used for development.
-// Future versions of this specification may allow for more granular
-// scopes, like `runtime:server`, `runtime:shipped`,
-// `development:test`, `development:benchmark`.
-enum DependencyScope {
-  runtime = 'runtime',
-  development = 'development'
-}
-
-export class Dependency {
-  #name: string
-  public package_url?: string
-  public relationship?: DependencyRelationship
-  public scope?: DependencyScope
-  public dependencies?: string[]
-
-  constructor(package_url: string, relationship?: string, scope?: string) {
-    this.package_url = package_url
-    this.#name = this.parseDependencyNameAndVersion(package_url)
-    if (relationship !== undefined) {
-      this.relationship = this.setRelationship(relationship)
-    }
-    if (scope !== undefined) {
-      this.scope = this.setScope(scope)
-    }
-  }
-
-  private setRelationship(relationship: string): DependencyRelationship {
-    if (
-      DependencyRelationship[
-        relationship as keyof typeof DependencyRelationship
-      ] !== undefined
-    ) {
-      return DependencyRelationship[
-        relationship as keyof typeof DependencyRelationship
-      ]
-    } else {
-      throw new Error(
-        `Invalid dependency relationship: ${relationship}. Only 'direct' and 'indirect' are supported.`
-      )
-    }
-  }
-
-  private setScope(scope: string): DependencyScope {
-    if (DependencyScope[scope as keyof typeof DependencyScope] !== undefined) {
-      return DependencyScope[scope as keyof typeof DependencyScope]
-    } else {
-      throw new Error(
-        `Invalid dependency scope: ${scope}. Only 'runtime' and 'development' are supported.`
-      )
-    }
-  }
-
-  private parseDependencyNameAndVersion(package_url: string): string {
-    // Match the start of the package_url and the ecosystem name
-    // Example: pkg:npm/%40angular/animation@12.3.1 matches pkg:npm/
-    // Example: pkg:deb/debian/curl@7.50.3-1?arch=i386&distro=jessie matches pkg:deb/
-    const matchFound = package_url.match(/pkg:(.*?)\//)
-    if (matchFound && matchFound.index != null) {
-      return package_url.split(matchFound[0])[1]
-    } else {
-      throw new Error(
-        'Dependency name and version could not be processed from package url: ' +
-          package_url
-      )
-    }
-  }
-
-  public getDependencyName(): string {
-    return this.#name
-  }
-
-  addTransitiveDependency(dependency: Dependency) {
-    if (this.dependencies === undefined) {
-      this.dependencies = []
-    }
-    this.dependencies.push(dependency.getDependencyName())
-  }
-}
 
 export type FileInfo = {
   source_location?: string // eslint-disable-line camelcase
@@ -126,10 +39,11 @@ export class Manifest {
   public name: string
   public file?: FileInfo
   public metadata?: Metadata
-  public resolved?: DependencyGraph
+  public resolved: DependencyGraph
 
   constructor(name: string, file?: FileInfo, metadata?: Metadata) {
     this.name = name
+    this.resolved = {}
     if (file) {
       this.file = file
     }
@@ -147,9 +61,6 @@ export class Manifest {
   }
 
   add(dependency: Dependency) {
-    if (this.resolved === undefined) {
-      this.resolved = {}
-    }
     this.resolved[dependency.getDependencyName()] = dependency
   }
 }

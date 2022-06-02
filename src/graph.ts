@@ -1,33 +1,33 @@
 import { PackageURL } from 'packageurl-js'
-import { Dependency } from './dependency'
+import { Package } from './package'
 
 export class Graph {
-  database: Record<string, Dependency>
+  database: Record<string, Package>
 
   constructor() {
     this.database = {}
   }
 
-  dependency(identifier: PackageURL | string): Dependency {
-    const existingDep = this.lookupDependency(identifier)
+  package(identifier: PackageURL | string): Package {
+    const existingDep = this.lookupPackage(identifier)
     if (existingDep) {
       return existingDep
     }
 
-    const dep = new Dependency(identifier)
-    this.addDependency(dep)
+    const dep = new Package(identifier)
+    this.addPackage(dep)
     return dep
   }
 
-  addDependency(dependency: Dependency) {
-    this.database[dependency.packageURL.toString()] = dependency
+  addPackage(pkg: Package) {
+    this.database[pkg.packageURL.toString()] = pkg
   }
 
-  removeDependency(dependency: Dependency) {
-    delete this.database[dependency.packageURL.toString()]
+  removePackage(pkg: Package) {
+    delete this.database[pkg.packageURL.toString()]
   }
 
-  lookupDependency(identifier: PackageURL | string): Dependency | undefined {
+  lookupPackage(identifier: PackageURL | string): Package | undefined {
     if (typeof identifier === 'string') {
       const purl = PackageURL.fromString(identifier)
       return this.database[purl.toString()]
@@ -36,7 +36,7 @@ export class Graph {
     }
   }
 
-  countDependencies(): number {
+  countPackages(): number {
     return Object.values(this.database).length
   }
 }

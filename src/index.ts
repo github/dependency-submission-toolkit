@@ -2,7 +2,8 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 
 import { ProcessDependenciesContent, readDependencies } from './processor'
-import { Dependency, Detector, Manifest, Metadata, Snapshot } from './snapshot'
+import { Detector, Manifest, Metadata, Snapshot } from './snapshot'
+import { Dependency } from "./dependency"
 
 export async function run(
   parseDependentsFunction: ProcessDependenciesContent,
