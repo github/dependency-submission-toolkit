@@ -11,10 +11,17 @@ import { Metadata } from './metadata'
 Core functionality for creating a snapshot of a project's dependencies.
 */
 
-type Job = {
+export type Job = {
   correlator: string
-  id: string
+  id: string | number
   html_url?: string // eslint-disable-line camelcase
+}
+
+export function jobFromContext(context: Context): Job {
+  return {
+    correlator: context.job,
+    id: context.runId.toString()
+  }
 }
 
 export type Detector = {
@@ -39,21 +46,19 @@ export class Snapshot {
 
   constructor(
     context: Context,
+    job?: Job,
     detector?: Detector,
     metadata?: Metadata,
-    version: 0 = 0
+    date: Date = new Date(),
+    version: number = 0
   ) {
     this.detector = detector
     this.metadata = metadata
     this.version = version
-    this.version = version
-    this.job = {
-      correlator: context.job,
-      id: context.runId.toString()
-    }
+    this.job = job || jobFromContext(context)
     this.sha = context.sha
     this.ref = context.ref
-    this.scanned = new Date().toISOString()
+    this.scanned = date.toISOString()
     this.manifests = {}
   }
 
