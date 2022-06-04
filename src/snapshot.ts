@@ -65,12 +65,8 @@ export class Snapshot {
     return JSON.stringify(this, undefined, 4)
   }
 
-  toJSON(): string {
-    return JSON.stringify(this)
-  }
-
   async submit() {
-    core.setOutput('snapshot', this.toJSON())
+    core.setOutput('snapshot', JSON.stringify(this))
     core.notice('Submitting snapshot...')
     core.notice(this.prettyJSON())
 

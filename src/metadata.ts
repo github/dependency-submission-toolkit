@@ -1,15 +1,23 @@
 type Scalar = null | boolean | string | number
 
-export const MaxMetaDataKeys = 8
+export const MAX_METADATA_SIZE = 8
 
-export type Metadata = Record<string, Scalar>
-
-export function metadataValidSize(metadata: Metadata): boolean {
-  if (
-    Object.keys(metadata).length >= 1 &&
-    Object.keys(metadata).length <= MaxMetaDataKeys
-  ) {
-    return true
+export class Metadata extends Map<string, Scalar> {
+  constructor() {
+    super()
   }
-  return false
+
+  set(key: string, value: Scalar): this {
+    if (this.size == MAX_METADATA_SIZE) {
+      throw new Error(
+        `Maximum size of Metadata exceeded. Only ${MAX_METADATA_SIZE} key-value pairs may be specified`
+      )
+    }
+    super.set(key, value)
+    return this
+  }
+
+  toJSON(): object {
+    return Object.fromEntries(this.entries())
+  }
 }
