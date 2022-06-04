@@ -18,6 +18,10 @@ export class Package {
   }
 
   get transitiveNames() {
-    return this.transitiveDependencies.map(dep => dep.packageURL.toString())
+    return this.transitiveDependencies.map((dep) => dep.packageURL.toString())
+  }
+
+  packageID(): string {
+    return this.packageURL.toString()
   }
 }

@@ -13,9 +13,10 @@ export type DependencyScope = 'runtime' | 'development'
 
 export class Dependency {
   constructor(
-    public depPackage: Package, 
-    public relationship?: DependencyRelationship, 
-    public scope?: DependencyScope) { }
+    public depPackage: Package,
+    public relationship?: DependencyRelationship,
+    public scope?: DependencyScope
+  ) {}
 
   toJson() {
     return JSON.stringify({
@@ -24,6 +25,6 @@ export class Dependency {
       scope: this.scope,
       dependencies: this.depPackage.transitiveNames
     })
-
   }
 }
+
