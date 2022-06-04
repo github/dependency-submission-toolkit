@@ -2,6 +2,50 @@ import { Package } from './package'
 
 import { Metadata } from './metadata'
 
+type FileInfo = {
+  source_location?: string // eslint-disable-line camelcase
+}
+
+/**
+ * DependencyRelationship is a notation of whether a dependency is requested
+ * directly by this manifest, or is a dependency of another dependency.
+ */
+export type DependencyRelationship = 'direct' | 'indirect'
+
+/**
+ * DependencyScope. A notation of whether the dependency is required for the
+ * primary build artifact (runtime), or is only used for development. Future
+ * versions of this specification may allow for more granular scopes, like
+ * `runtime:server`, `runtime:shipped`, `development:test`,
+ * `development:benchmark`, and so on.
+ */
+export type DependencyScope = 'runtime' | 'development'
+
+class Dependency {
+  depPackage: Package
+  relationship?: DependencyRelationship
+  scope?: DependencyScope
+
+  constructor(
+    depPackage: Package,
+    relationship?: DependencyRelationship,
+    scope?: DependencyScope
+  ) {
+    this.depPackage = depPackage
+    this.relationship = relationship
+    this.scope = scope
+  }
+
+  toJSON() {
+    return {
+      package_url: this.depPackage.packageURL.toString(),
+      relationship: this.relationship,
+      scope: this.scope,
+      dependencies: this.depPackage.transitiveNames
+    }
+  }
+}
+
 /**
  * Manifest.
  */
@@ -56,52 +100,12 @@ export class Manifest {
   }
 }
 
-type FileInfo = {
-  source_location?: string // eslint-disable-line camelcase
-}
-
-/**
- * DependencyScope. A notation of whether the dependency is required for the
- * primary build artifact (runtime), or is only used for development. Future
- * versions of this specification may allow for more granular scopes, like
- * `runtime:server`, `runtime:shipped`, `development:test`,
- * `development:benchmark`, and so on.
- */
-export type DependencyScope = 'runtime' | 'development'
-
-class Dependency {
-  constructor(
-    public depPackage: Package,
-    public relationship?: DependencyRelationship,
-    public scope?: DependencyScope
-  ) {}
-
-  toJSON() {
-    return {
-      package_url: this.depPackage.packageURL.toString(),
-      relationship: this.relationship,
-      scope: this.scope,
-      dependencies: this.depPackage.transitiveNames
-    }
-  }
-}
-
-/**
- * DependencyRelationship is a notation of whether a dependency is requested
- * directly by this manifest, or is a dependency of another dependency.
- */
-export type DependencyRelationship = 'direct' | 'indirect'
-
 /**
  * BuildTarget.
  *
  * @extends {Manifest}
  */
 export class BuildTarget extends Manifest {
-  constructor(name: string, filePath?: string, metadata?: Metadata) {
-    super(name, filePath, metadata)
-  }
-
   /**
    * addBuildDependency will add a package as a direct runtime dependency and all of
    * the packages transitive dependencies as indirect dependencies
