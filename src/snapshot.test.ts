@@ -24,6 +24,10 @@ manifest.addDirectDependency(
 )
 manifest.addIndirectDependency(graph.package('pkg:npm/%40actions/core@1.6.0'))
 
+// add bogus git data to the context
+context.sha = '0000000000000000000000000000000000000000'
+context.ref = 'foo/bar/baz'
+
 describe('Snapshot', () => {
   it('renders expected JSON', () => {
     const snapshot = new Snapshot(
@@ -38,7 +42,6 @@ describe('Snapshot', () => {
       new Date('2022-06-04T05:07:06.457Z')
     )
     snapshot.addManifest(manifest)
-
     expect(roundTripJSON(snapshot)).toEqual({
       detector: {
         name: 'test detector',
@@ -53,7 +56,9 @@ describe('Snapshot', () => {
         id: 42,
         correlator: 'test'
       },
+      ref: 'foo/bar/baz',
       scanned: '2022-06-04T05:07:06.457Z',
+      sha: '0000000000000000000000000000000000000000',
       manifests: {
         test: {
           resolved: {

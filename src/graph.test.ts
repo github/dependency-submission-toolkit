@@ -1,5 +1,5 @@
 import { PackageURL } from 'packageurl-js'
-import { Package } from './Package'
+import { Package } from './package'
 import { Graph } from './graph'
 
 const purl = 'pkg:npm/%40github/dependency-submission-toolkit@0.1.2'
