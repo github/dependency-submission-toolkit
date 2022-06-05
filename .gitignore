@@ -100,3 +100,4 @@ lib/**/*
 
 # Ignore output files
 /dist
+dist

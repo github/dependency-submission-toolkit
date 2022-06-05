@@ -1,0 +1,10 @@
+name: 'Example Dependency Submission Action'
+description: 'Example action using the dependency-submission-toolkit and npm'
+inputs:
+  npm-package-directory:
+    description: 'NPM package directory (directory with package.json)'
+    required: true
+    default: './'
+runs:
+  using: 'node16'
+  main: 'example/action-dist/index.js'
