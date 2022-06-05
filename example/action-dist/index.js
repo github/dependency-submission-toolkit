@@ -516,7 +516,7 @@ function submitSnapshot(snapshot, context = github.context) {
             if (error instanceof request_error_1.RequestError) {
                 core.error(`HTTP Status ${error.status} for request ${error.request.method} ${error.request.url}`);
                 if (error.response) {
-                    core.error(`Response body:\n${JSON.stringify(error.request.body, undefined, 2)}`);
+                    core.error(`Response body:\n${error.response.data}`);
                 }
             }
             if (error instanceof Error) {
