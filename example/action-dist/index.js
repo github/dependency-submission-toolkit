@@ -81,7 +81,7 @@ class Package {
     }
 }
 exports.Package = Package;
-
+//# sourceMappingURL=package.js.map
 
 /***/ }),
 
@@ -175,7 +175,7 @@ class Graph {
     }
 }
 exports.Graph = Graph;
-
+//# sourceMappingURL=graph.js.map
 
 /***/ }),
 
@@ -198,7 +198,7 @@ Object.defineProperty(exports, "Package", ({ enumerable: true, get: function () 
 const snapshot_1 = __nccwpck_require__(8962);
 Object.defineProperty(exports, "Snapshot", ({ enumerable: true, get: function () { return snapshot_1.Snapshot; } }));
 Object.defineProperty(exports, "submitSnapshot", ({ enumerable: true, get: function () { return snapshot_1.submitSnapshot; } }));
-
+//# sourceMappingURL=index.js.map
 
 /***/ }),
 
@@ -339,7 +339,7 @@ class BuildTarget extends Manifest {
     }
 }
 exports.BuildTarget = BuildTarget;
-
+//# sourceMappingURL=manifest.js.map
 
 /***/ }),
 
@@ -383,7 +383,7 @@ class Metadata extends Map {
     }
 }
 exports.Metadata = Metadata;
-
+//# sourceMappingURL=metadata.js.map
 
 /***/ }),
 
@@ -467,7 +467,7 @@ class Package {
     }
 }
 exports.Package = Package;
-
+//# sourceMappingURL=package.js.map
 
 /***/ }),
 
@@ -606,147 +606,7 @@ function submitSnapshot(snapshot, context = github.context) {
     });
 }
 exports.submitSnapshot = submitSnapshot;
-
-
-/***/ }),
-
-/***/ 8577:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.main = exports.createBuildTarget = exports.parseDependencies = exports.parseNameAndNamespace = void 0;
-const core = __importStar(__nccwpck_require__(5316));
-const exec = __importStar(__nccwpck_require__(110));
-const packageurl_js_1 = __nccwpck_require__(9727);
-const dependency_submission_toolkit_1 = __nccwpck_require__(7700);
-/**
- * parseNameAndNamespace parses the name and namespace from a NPM package name.
- * Namespace and name are URL-safe encoded, as expected by PackageURL
- *
- * @param {string} npmDepName
- * @returns {[string, string]} tuple of namespace and name
- */
-function parseNameAndNamespace(npmDepName) {
-    const namespaceAndName = npmDepName.split('/');
-    if (namespaceAndName.length == 2) {
-        return [
-            encodeURIComponent(namespaceAndName[0]),
-            encodeURIComponent(namespaceAndName[1])
-        ];
-    }
-    else if (namespaceAndName.length == 1) {
-        return ['', encodeURIComponent(namespaceAndName[0])];
-    }
-    else {
-        throw new Error(`expectation violated: package '${npmDepName}' has more than one slash (/) in name`);
-    }
-}
-exports.parseNameAndNamespace = parseNameAndNamespace;
-/**
- * parseDependencies recursively parses the dependency tree provided by 'npm
- * list' and returns an array of the top-level parent packages. If a package
- * has already been added to the Graph, it does not reprocess its dependencies.
- */
-function parseDependencies(graph, dependencies) {
-    return Object.entries(dependencies).map(([depName, dep]) => {
-        const [namespace, name] = parseNameAndNamespace(depName);
-        const purl = new packageurl_js_1.PackageURL('npm', namespace, name, dep.version, null, null);
-        // if the package has already been added to the graph, return the package early
-        if (graph.hasPackage(purl))
-            return graph.package(purl);
-        let transitives = [];
-        // post-order traversal of the dependency tree with recursion.
-        // recursion is not expected to blow the stack as dependency trees are
-        // unlikely to have significant depth
-        if (dep.dependencies !== undefined) {
-            transitives.push(...parseDependencies(graph, dep.dependencies));
-        }
-        return graph
-            .package(new packageurl_js_1.PackageURL('npm', namespace, name, dep.version, null, null))
-            .addTransitives(transitives);
-    });
-}
-exports.parseDependencies = parseDependencies;
-/**
- * createBuildTarget creates a BuildTarget--a specialized sub-class of Manifest
- * intended to capture the dependencies of a speicific build-target, rather
- * than all packages provided by the manifest enviroment. It parses the output
- * from 'npm list' and distinguishes between direct dependencies (those the
- * build-target explicity depends on) and indirect (transitive dependencies of
- * the direct dependencies). It identifies all dependency packages as
- * 'runtime',  since no development packages are included in a build-target.
- *
- * @param {NpmPackage} npmPackage
- * @returns {BuildTarget}
- */
-function createBuildTarget(npmPackage) {
-    const graph = new dependency_submission_toolkit_1.Graph();
-    const topLevelDependencies = parseDependencies(graph, npmPackage.dependencies);
-    const buildTarget = new dependency_submission_toolkit_1.BuildTarget(npmPackage.name);
-    topLevelDependencies.forEach((dep) => {
-        buildTarget.addBuildDependency(dep);
-    });
-    return buildTarget;
-}
-exports.createBuildTarget = createBuildTarget;
-// This program uses 'npm list' to provide a list of all production
-// (non-development) dependencies and all transitive dependencies. This
-// provides transitive relationships unlike package.json, and output can be
-// configured to avoid issues present with parsing package-lock.json (such as
-// inclusion of workspace packages). This is provided as example to help guide
-// development.
-function main() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const npmPackageDirectory = core.getInput('npm-package-directory');
-        const prodPackages = yield exec.getExecOutput('npm', ['list', '--prod', '--all', '--json'], { cwd: npmPackageDirectory });
-        if (prodPackages.exitCode !== 0) {
-            core.error(prodPackages.stderr);
-            core.setFailed("'npm ls' failed!");
-            return;
-        }
-        const npmPackage = JSON.parse(prodPackages.stdout);
-        const buildTarget = createBuildTarget(npmPackage);
-        const snapshot = new dependency_submission_toolkit_1.Snapshot();
-        snapshot.addManifest(buildTarget);
-        (0, dependency_submission_toolkit_1.submitSnapshot)(snapshot);
-    });
-}
-exports.main = main;
-
+//# sourceMappingURL=snapshot.js.map
 
 /***/ }),
 
@@ -10601,6 +10461,146 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 2448:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.main = exports.createBuildTarget = exports.parseDependencies = exports.parseNameAndNamespace = void 0;
+const core = __importStar(__nccwpck_require__(5316));
+const exec = __importStar(__nccwpck_require__(110));
+const packageurl_js_1 = __nccwpck_require__(9727);
+const dependency_submission_toolkit_1 = __nccwpck_require__(7700);
+/**
+ * parseNameAndNamespace parses the name and namespace from a NPM package name.
+ * Namespace and name are URL-safe encoded, as expected by PackageURL
+ *
+ * @param {string} npmDepName
+ * @returns {[string, string]} tuple of namespace and name
+ */
+function parseNameAndNamespace(npmDepName) {
+    const namespaceAndName = npmDepName.split('/');
+    if (namespaceAndName.length == 2) {
+        return [
+            encodeURIComponent(namespaceAndName[0]),
+            encodeURIComponent(namespaceAndName[1])
+        ];
+    }
+    else if (namespaceAndName.length == 1) {
+        return ['', encodeURIComponent(namespaceAndName[0])];
+    }
+    else {
+        throw new Error(`expectation violated: package '${npmDepName}' has more than one slash (/) in name`);
+    }
+}
+exports.parseNameAndNamespace = parseNameAndNamespace;
+/**
+ * parseDependencies recursively parses the dependency tree provided by 'npm
+ * list' and returns an array of the top-level parent packages. If a package
+ * has already been added to the Graph, it does not reprocess its dependencies.
+ */
+function parseDependencies(graph, dependencies) {
+    return Object.entries(dependencies).map(([depName, dep]) => {
+        const [namespace, name] = parseNameAndNamespace(depName);
+        const purl = new packageurl_js_1.PackageURL('npm', namespace, name, dep.version, null, null);
+        // if the package has already been added to the graph, return the package early
+        if (graph.hasPackage(purl))
+            return graph.package(purl);
+        let transitives = [];
+        // post-order traversal of the dependency tree with recursion.
+        // recursion is not expected to blow the stack as dependency trees are
+        // unlikely to have significant depth
+        if (dep.dependencies !== undefined) {
+            transitives.push(...parseDependencies(graph, dep.dependencies));
+        }
+        return graph
+            .package(new packageurl_js_1.PackageURL('npm', namespace, name, dep.version, null, null))
+            .addTransitives(transitives);
+    });
+}
+exports.parseDependencies = parseDependencies;
+/**
+ * createBuildTarget creates a BuildTarget--a specialized sub-class of Manifest
+ * intended to capture the dependencies of a speicific build-target, rather
+ * than all packages provided by the manifest enviroment. It parses the output
+ * from 'npm list' and distinguishes between direct dependencies (those the
+ * build-target explicity depends on) and indirect (transitive dependencies of
+ * the direct dependencies). It identifies all dependency packages as
+ * 'runtime',  since no development packages are included in a build-target.
+ *
+ * @param {NpmPackage} npmPackage
+ * @returns {BuildTarget}
+ */
+function createBuildTarget(npmPackage) {
+    const graph = new dependency_submission_toolkit_1.Graph();
+    const topLevelDependencies = parseDependencies(graph, npmPackage.dependencies);
+    const buildTarget = new dependency_submission_toolkit_1.BuildTarget(npmPackage.name);
+    topLevelDependencies.forEach((dep) => {
+        buildTarget.addBuildDependency(dep);
+    });
+    return buildTarget;
+}
+exports.createBuildTarget = createBuildTarget;
+// This program uses 'npm list' to provide a list of all production
+// (non-development) dependencies and all transitive dependencies. This
+// provides transitive relationships unlike package.json, and output can be
+// configured to avoid issues present with parsing package-lock.json (such as
+// inclusion of workspace packages). This is provided as example to help guide
+// development.
+function main() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const npmPackageDirectory = core.getInput('npm-package-directory');
+        const prodPackages = yield exec.getExecOutput('npm', ['list', '--prod', '--all', '--json'], { cwd: npmPackageDirectory });
+        if (prodPackages.exitCode !== 0) {
+            core.error(prodPackages.stderr);
+            core.setFailed("'npm ls' failed!");
+            return;
+        }
+        const npmPackage = JSON.parse(prodPackages.stdout);
+        const buildTarget = createBuildTarget(npmPackage);
+        const snapshot = new dependency_submission_toolkit_1.Snapshot();
+        snapshot.addManifest(buildTarget);
+        (0, dependency_submission_toolkit_1.submitSnapshot)(snapshot);
+    });
+}
+exports.main = main;
+
+
+/***/ }),
+
 /***/ 6903:
 /***/ ((module) => {
 
@@ -10798,7 +10798,7 @@ var __webpack_exports__ = {};
 var exports = __webpack_exports__;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const npm_detector_1 = __nccwpck_require__(8577);
+const npm_detector_1 = __nccwpck_require__(2448);
 (0, npm_detector_1.main)();
 
 })();
