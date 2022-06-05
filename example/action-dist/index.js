@@ -1,538 +1,6 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 2089:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Graph = void 0;
-const packageurl_js_1 = __nccwpck_require__(9727);
-const package_1 = __nccwpck_require__(218);
-/**
- * Use Graph to define packages and the relationships between packages. You may
- * think of Graph as the universe of possible packages to be used in Manifests
- * and BuildTargets. Graph is not seralized to the Dependency Submission API.
- */
-class Graph {
-    constructor() {
-        this.database = {};
-    }
-    /**
-     * 'graph.package()' will be the most commonly used method of Graph.
-     * package(identifier) will create and add a new Package to the Graph if no
-     * Packaging with a matching identifer exists in Graph, or return an existing
-     * Package if a match is found. The mutation in this case is expected; do not
-     * use package(identifier) to determine if a package is already added.
-     * Instead, use hasPackage or lookupPackage.
-     *
-     *
-     * @param {PackageURL | string} identifier PackageURL or string matching the Package URL format (https://github.com/package-url/purl-spec)
-     * @returns {Package}
-     */
-    package(identifier) {
-        const existingDep = this.lookupPackage(identifier);
-        if (existingDep) {
-            return existingDep;
-        }
-        const dep = new package_1.Package(identifier);
-        this.addPackage(dep);
-        return dep;
-    }
-    /**
-     * addPackage adds a package, even if it already exists in the graph.
-     *
-     * @param {Package} pkg
-     */
-    addPackage(pkg) {
-        this.database[pkg.packageURL.toString()] = pkg;
-    }
-    /**
-     * removePackage a removes a package from the graph
-     *
-     * @param {Package} pkg
-     */
-    removePackage(pkg) {
-        delete this.database[pkg.packageURL.toString()];
-    }
-    /**
-     * lookupPackage looks up and returns a package with a matching identifier,
-     * if one exists.
-     *
-     * @param {PackageURL | string} identifier
-     * @returns {Package | undefined}
-     */
-    lookupPackage(identifier) {
-        if (typeof identifier === 'string') {
-            const purl = packageurl_js_1.PackageURL.fromString(identifier);
-            return this.database[purl.toString()];
-        }
-        else {
-            return this.database[identifier.toString()];
-        }
-    }
-    /**
-     * hasPackage returns true if a package with a matching identifier exists.
-     *
-     * @param {PackageURL | string} identifier
-     * @returns {boolean}
-     */
-    hasPackage(identifier) {
-        return this.lookupPackage(identifier) !== undefined;
-    }
-    /**
-     * countPackages returns the total number of packages tracked in the graph
-     *
-     * @returns {number}
-     */
-    countPackages() {
-        return Object.values(this.database).length;
-    }
-}
-exports.Graph = Graph;
-//# sourceMappingURL=graph.js.map
-
-/***/ }),
-
-/***/ 7700:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.submitSnapshot = exports.Snapshot = exports.Package = exports.Metadata = exports.Graph = exports.Manifest = exports.BuildTarget = void 0;
-const graph_1 = __nccwpck_require__(2089);
-Object.defineProperty(exports, "Graph", ({ enumerable: true, get: function () { return graph_1.Graph; } }));
-const manifest_1 = __nccwpck_require__(6246);
-Object.defineProperty(exports, "Manifest", ({ enumerable: true, get: function () { return manifest_1.Manifest; } }));
-Object.defineProperty(exports, "BuildTarget", ({ enumerable: true, get: function () { return manifest_1.BuildTarget; } }));
-const metadata_1 = __nccwpck_require__(5241);
-Object.defineProperty(exports, "Metadata", ({ enumerable: true, get: function () { return metadata_1.Metadata; } }));
-const package_1 = __nccwpck_require__(218);
-Object.defineProperty(exports, "Package", ({ enumerable: true, get: function () { return package_1.Package; } }));
-const snapshot_1 = __nccwpck_require__(8962);
-Object.defineProperty(exports, "Snapshot", ({ enumerable: true, get: function () { return snapshot_1.Snapshot; } }));
-Object.defineProperty(exports, "submitSnapshot", ({ enumerable: true, get: function () { return snapshot_1.submitSnapshot; } }));
-//# sourceMappingURL=index.js.map
-
-/***/ }),
-
-/***/ 6246:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.BuildTarget = exports.Manifest = void 0;
-/**
- * Dependency.
- */
-class Dependency {
-    /**
-     * constructor.
-     *
-     * @param {Package} depPackage
-     * @param {DependencyRelationship} relationship
-     * @param {DependencyScope} scope
-     */
-    constructor(depPackage, relationship, scope) {
-        this.depPackage = depPackage;
-        this.relationship = relationship;
-        this.scope = scope;
-    }
-    /**
-     * toJSON.
-     */
-    toJSON() {
-        return {
-            package_url: this.depPackage.packageURL.toString(),
-            relationship: this.relationship,
-            scope: this.scope,
-            dependencies: this.depPackage.transitiveIDs
-        };
-    }
-}
-/**
- * Manifest defines the dependencies and the relationships of those dependencies.
- */
-class Manifest {
-    constructor(name, filePath, metadata) {
-        this.resolved = {};
-        this.name = name;
-        if (filePath) {
-            this.file = { source_location: filePath };
-        }
-        this.metadata = metadata;
-    }
-    /**
-     * addIndirectDependency adds a package as an indirect dependency to the
-     * manifest. Direct dependencies take precendence over indirect dependencies
-     * if a package is added as both.
-     *
-     * @param {Package} pkg
-     * @param {DependencyScope} scope
-     */
-    addDirectDependency(pkg, scope) {
-        // will overwrite any previous indirect assigments
-        this.resolved[pkg.packageID()] = new Dependency(pkg, 'direct', scope);
-    }
-    /**
-     * addIndirectDependency adds a package as an indirect dependency to the
-     * manifest. NOTE: if a dependency has been previously added as a direct
-     * dependency, no change will happen (direct dependencies take precedence).
-     *
-     * @param {Package} pkg
-     * @param {DependencyScope} scope dependency scope of the package
-     */
-    addIndirectDependency(pkg, scope) {
-        var _a;
-        var _b, _c;
-        // nullish assigment to keep any previous assignments, including direct assigments
-        (_a = (_b = this.resolved)[_c = pkg.packageID()]) !== null && _a !== void 0 ? _a : (_b[_c] = new Dependency(pkg, 'indirect', scope));
-    }
-    hasDependency(pkg) {
-        return this.lookupDependency(pkg) !== undefined;
-    }
-    lookupDependency(pkg) {
-        return this.resolved[pkg.packageID()];
-    }
-    countDependencies() {
-        return Object.keys(this.resolved).length;
-    }
-    /**
-     * filterDependencies. Given a predicate function (a function returning a
-     * boolean for an input), return the packages that match the dependency
-     * relationship. Used for getting filtered lists of direct/indirect packages,
-     * runtime/development packages, etc.
-     *
-     * @param {Function} predicate
-     * @returns {Array<Package>}
-     */
-    filterDependencies(predicate) {
-        return Object.values(this.resolved).reduce((acc, dep) => {
-            if (predicate(dep)) {
-                acc.push(dep.depPackage);
-            }
-            return acc;
-        }, []);
-    }
-    /**
-     * directDependencies returns list of packages that are specified as direct dependencies
-     */
-    directDependencies() {
-        return this.filterDependencies((dep) => dep.relationship === 'direct');
-    }
-    /**
-     * indirectDependencies returns list of packages that are specified as indirect dependencies
-     */
-    indirectDependencies() {
-        return this.filterDependencies((dep) => dep.relationship === 'indirect');
-    }
-}
-exports.Manifest = Manifest;
-/**
- * The dependencies used in a code artifact or "build target" are more
- * accurately determined by the build process or commands used to generate the
- * build target, rather than static processing of package files. BuildTarget is
- * a specialized case of Manifest intended to assist in capturing this
- * association of build target and dependencies.
- *
- * @extends {Manifest}
- */
-class BuildTarget extends Manifest {
-    /**
-     * addBuildDependency will add a package as a direct runtime dependency and all of
-     * the packages transitive dependencies as indirect dependencies
-     *
-     * @param {Package} pkg package used to build the build target
-     */
-    addBuildDependency(pkg) {
-        this.addDirectDependency(pkg, 'runtime');
-        pkg.transitiveDependencies.forEach((transDep) => {
-            this.addIndirectDependency(transDep, 'runtime');
-        });
-    }
-}
-exports.BuildTarget = BuildTarget;
-//# sourceMappingURL=manifest.js.map
-
-/***/ }),
-
-/***/ 5241:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Metadata = exports.MAX_METADATA_SIZE = void 0;
-exports.MAX_METADATA_SIZE = 8;
-/**
- * Metadata provides a means of associating additional metadata with a
- * Dependency, Manifest, or Snapshot. Metadata are simple key-value pairs.
- *
- * @extends {Map<string, Scalar>}
- */
-class Metadata extends Map {
-    /**
-     * Set a metadata key-value pair. Note that a maximum of 8 metadata key-value
-     * pairs may be set.
-     *
-     * @param {string} key
-     * @param {Scalar} value
-     * @returns {this}
-     */
-    set(key, value) {
-        if (this.size === exports.MAX_METADATA_SIZE) {
-            throw new Error(`Maximum size of Metadata exceeded. Only ${exports.MAX_METADATA_SIZE} key-value pairs may be specified`);
-        }
-        super.set(key, value);
-        return this;
-    }
-    /**
-     * Metadata has a custom toJSON serializer
-     *
-     * @returns {object}
-     */
-    toJSON() {
-        return Object.fromEntries(this.entries());
-    }
-}
-exports.Metadata = Metadata;
-//# sourceMappingURL=metadata.js.map
-
-/***/ }),
-
-/***/ 218:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Package = void 0;
-const packageurl_js_1 = __nccwpck_require__(9727);
-/**
- * Package is module that can be depended upon in manifest or build target. A
- * package is what you would download from a registry like NPM.
- */
-class Package {
-    /**
-     * A Package can be constructed with a PackageURL or a string conforming to
-     * the Package URL format (https://github.com/package-url/purl-spec)
-     *
-     * @param {PackageURL | string} pkg
-     */
-    constructor(pkg) {
-        if (typeof pkg === 'string') {
-            this.packageURL = packageurl_js_1.PackageURL.fromString(pkg);
-        }
-        else {
-            this.packageURL = pkg;
-        }
-        this.transitiveDependencies = [];
-    }
-    /**
-     * Associate a transitive depdendency with this package.
-     *
-     * @param {Package} pkg
-     * @returns {Package}
-     */
-    addTransitive(pkg) {
-        this.transitiveDependencies.push(pkg);
-        return this;
-    }
-    /**
-     * Add multiple packages as transitive dependencies.
-     *
-     * @param {Array} pkgs
-     * @returns {Package}
-     */
-    addTransitives(pkgs) {
-        pkgs.forEach((pkg) => this.addTransitive(pkg));
-        return this;
-    }
-    /**
-     * transitiveIDs provides the list of IDs of transitive dependencies
-     */
-    get transitiveIDs() {
-        return this.transitiveDependencies.map((dep) => dep.packageID());
-    }
-    /**
-     * packageID generates the unique package ID (currently, the Package URL)
-     *
-     * @returns {string}
-     */
-    packageID() {
-        return this.packageURL.toString();
-    }
-    /**
-     * name of the package
-     *
-     * @returns {string}
-     */
-    name() {
-        return this.packageURL.name;
-    }
-    /**
-     * version of the package
-     *
-     * @returns {string}
-     */
-    version() {
-        return this.packageURL.version || '';
-    }
-}
-exports.Package = Package;
-//# sourceMappingURL=package.js.map
-
-/***/ }),
-
-/***/ 8962:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.submitSnapshot = exports.Snapshot = exports.jobFromContext = void 0;
-const core = __importStar(__nccwpck_require__(5316));
-const github = __importStar(__nccwpck_require__(2189));
-const rest_1 = __nccwpck_require__(9646);
-const request_error_1 = __nccwpck_require__(7069);
-/**
- * jobFromContext creates a job from a @actions/github Context
- *
- * @param {Context} context
- * @returns {Job}
- */
-function jobFromContext(context) {
-    return {
-        correlator: context.job,
-        id: context.runId.toString()
-    };
-}
-exports.jobFromContext = jobFromContext;
-/**
- * Snapshot is the top-level container for Dependency Submisison
- */
-class Snapshot {
-    /**
-     * All construor parameters of a Snapshot are optional, but can be specified for specific overrides
-     *
-     * @param {Context} context
-     * @param {Job} job
-     * @param {Detector} detector
-     * @param {Metadata} metadata
-     * @param {Date} date
-     * @param {number} version
-     */
-    constructor(context = github.context, job, detector, metadata, date = new Date(), version = 0) {
-        this.detector = detector;
-        this.metadata = metadata;
-        this.version = version;
-        this.job = job || jobFromContext(context);
-        this.sha = context.sha;
-        this.ref = context.ref;
-        this.scanned = date.toISOString();
-        this.manifests = {};
-    }
-    /**
-     * addManifest adds a manifest to the snapshot. At least one manifest must be added.
-     *
-     * @param {Manifest} manifest
-     */
-    addManifest(manifest) {
-        this.manifests[manifest.name] = manifest;
-    }
-    /**
-     * prettyJSON formats an intended version of the Snapshot (useful for debugging)
-     *
-     * @returns {string}
-     */
-    prettyJSON() {
-        return JSON.stringify(this, undefined, 4);
-    }
-}
-exports.Snapshot = Snapshot;
-/**
- * submitSnapshot submits a snapshot to the Dependency Submission API
- *
- * @param {Snapshot} snapshot
- * @param {Context} context
- */
-function submitSnapshot(snapshot, context = github.context) {
-    return __awaiter(this, void 0, void 0, function* () {
-        core.setOutput('snapshot', JSON.stringify(snapshot));
-        core.notice('Submitting snapshot...');
-        core.notice(snapshot.prettyJSON());
-        const repo = context.repo;
-        const githubToken = core.getInput('token');
-        const octokit = new rest_1.Octokit({
-            auth: githubToken
-        });
-        try {
-            const response = yield octokit.request('POST /repos/{owner}/{repo}/dependency-graph/snapshots', {
-                headers: {
-                    accept: 'application/vnd.github.foo-bar-preview+json'
-                },
-                owner: repo.owner,
-                repo: repo.repo,
-                data: JSON.stringify(snapshot)
-            });
-            core.notice('Snapshot sucessfully created at ' + response.data.created_at.toString());
-        }
-        catch (error) {
-            if (error instanceof request_error_1.RequestError) {
-                core.error(`HTTP Status ${error.status} for request ${error.request.method} ${error.request.url}`);
-                if (error.response) {
-                    core.error(`Response body:\n${JSON.stringify(error.response.data, undefined, 2)}`);
-                }
-            }
-            if (error instanceof Error) {
-                core.error(error.message);
-                if (error.stack)
-                    core.error(error.stack);
-            }
-            throw new Error(`Failed to submit snapshot: ${error}`);
-        }
-    });
-}
-exports.submitSnapshot = submitSnapshot;
-//# sourceMappingURL=snapshot.js.map
-
-/***/ }),
-
 /***/ 9190:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -10426,7 +9894,7 @@ exports.main = exports.createBuildTarget = exports.parseDependencies = exports.p
 const core = __importStar(__nccwpck_require__(5316));
 const exec = __importStar(__nccwpck_require__(110));
 const packageurl_js_1 = __nccwpck_require__(9727);
-const dependency_submission_toolkit_1 = __nccwpck_require__(7700);
+const dependency_submission_toolkit_1 = __nccwpck_require__(3571);
 /**
  * parseNameAndNamespace parses the name and namespace from a NPM package name.
  * Namespace and name are URL-safe encoded, as expected by PackageURL
@@ -10520,6 +9988,538 @@ function main() {
     });
 }
 exports.main = main;
+
+
+/***/ }),
+
+/***/ 6115:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Graph = void 0;
+const packageurl_js_1 = __nccwpck_require__(9727);
+const package_1 = __nccwpck_require__(4715);
+/**
+ * Use Graph to define packages and the relationships between packages. You may
+ * think of Graph as the universe of possible packages to be used in Manifests
+ * and BuildTargets. Graph is not seralized to the Dependency Submission API.
+ */
+class Graph {
+    constructor() {
+        this.database = {};
+    }
+    /**
+     * 'graph.package()' will be the most commonly used method of Graph.
+     * package(identifier) will create and add a new Package to the Graph if no
+     * Packaging with a matching identifer exists in Graph, or return an existing
+     * Package if a match is found. The mutation in this case is expected; do not
+     * use package(identifier) to determine if a package is already added.
+     * Instead, use hasPackage or lookupPackage.
+     *
+     *
+     * @param {PackageURL | string} identifier PackageURL or string matching the Package URL format (https://github.com/package-url/purl-spec)
+     * @returns {Package}
+     */
+    package(identifier) {
+        const existingDep = this.lookupPackage(identifier);
+        if (existingDep) {
+            return existingDep;
+        }
+        const dep = new package_1.Package(identifier);
+        this.addPackage(dep);
+        return dep;
+    }
+    /**
+     * addPackage adds a package, even if it already exists in the graph.
+     *
+     * @param {Package} pkg
+     */
+    addPackage(pkg) {
+        this.database[pkg.packageURL.toString()] = pkg;
+    }
+    /**
+     * removePackage a removes a package from the graph
+     *
+     * @param {Package} pkg
+     */
+    removePackage(pkg) {
+        delete this.database[pkg.packageURL.toString()];
+    }
+    /**
+     * lookupPackage looks up and returns a package with a matching identifier,
+     * if one exists.
+     *
+     * @param {PackageURL | string} identifier
+     * @returns {Package | undefined}
+     */
+    lookupPackage(identifier) {
+        if (typeof identifier === 'string') {
+            const purl = packageurl_js_1.PackageURL.fromString(identifier);
+            return this.database[purl.toString()];
+        }
+        else {
+            return this.database[identifier.toString()];
+        }
+    }
+    /**
+     * hasPackage returns true if a package with a matching identifier exists.
+     *
+     * @param {PackageURL | string} identifier
+     * @returns {boolean}
+     */
+    hasPackage(identifier) {
+        return this.lookupPackage(identifier) !== undefined;
+    }
+    /**
+     * countPackages returns the total number of packages tracked in the graph
+     *
+     * @returns {number}
+     */
+    countPackages() {
+        return Object.values(this.database).length;
+    }
+}
+exports.Graph = Graph;
+
+
+/***/ }),
+
+/***/ 3571:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.submitSnapshot = exports.Snapshot = exports.Package = exports.Metadata = exports.Graph = exports.Manifest = exports.BuildTarget = void 0;
+const graph_1 = __nccwpck_require__(6115);
+Object.defineProperty(exports, "Graph", ({ enumerable: true, get: function () { return graph_1.Graph; } }));
+const manifest_1 = __nccwpck_require__(4786);
+Object.defineProperty(exports, "Manifest", ({ enumerable: true, get: function () { return manifest_1.Manifest; } }));
+Object.defineProperty(exports, "BuildTarget", ({ enumerable: true, get: function () { return manifest_1.BuildTarget; } }));
+const metadata_1 = __nccwpck_require__(5439);
+Object.defineProperty(exports, "Metadata", ({ enumerable: true, get: function () { return metadata_1.Metadata; } }));
+const package_1 = __nccwpck_require__(4715);
+Object.defineProperty(exports, "Package", ({ enumerable: true, get: function () { return package_1.Package; } }));
+const snapshot_1 = __nccwpck_require__(7794);
+Object.defineProperty(exports, "Snapshot", ({ enumerable: true, get: function () { return snapshot_1.Snapshot; } }));
+Object.defineProperty(exports, "submitSnapshot", ({ enumerable: true, get: function () { return snapshot_1.submitSnapshot; } }));
+
+
+/***/ }),
+
+/***/ 4786:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BuildTarget = exports.Manifest = void 0;
+/**
+ * Dependency.
+ */
+class Dependency {
+    /**
+     * constructor.
+     *
+     * @param {Package} depPackage
+     * @param {DependencyRelationship} relationship
+     * @param {DependencyScope} scope
+     */
+    constructor(depPackage, relationship, scope) {
+        this.depPackage = depPackage;
+        this.relationship = relationship;
+        this.scope = scope;
+    }
+    /**
+     * toJSON.
+     */
+    toJSON() {
+        return {
+            package_url: this.depPackage.packageURL.toString(),
+            relationship: this.relationship,
+            scope: this.scope,
+            dependencies: this.depPackage.transitiveIDs
+        };
+    }
+}
+/**
+ * Manifest defines the dependencies and the relationships of those dependencies.
+ */
+class Manifest {
+    constructor(name, filePath, metadata) {
+        this.resolved = {};
+        this.name = name;
+        if (filePath) {
+            this.file = { source_location: filePath };
+        }
+        this.metadata = metadata;
+    }
+    /**
+     * addIndirectDependency adds a package as an indirect dependency to the
+     * manifest. Direct dependencies take precendence over indirect dependencies
+     * if a package is added as both.
+     *
+     * @param {Package} pkg
+     * @param {DependencyScope} scope
+     */
+    addDirectDependency(pkg, scope) {
+        // will overwrite any previous indirect assigments
+        this.resolved[pkg.packageID()] = new Dependency(pkg, 'direct', scope);
+    }
+    /**
+     * addIndirectDependency adds a package as an indirect dependency to the
+     * manifest. NOTE: if a dependency has been previously added as a direct
+     * dependency, no change will happen (direct dependencies take precedence).
+     *
+     * @param {Package} pkg
+     * @param {DependencyScope} scope dependency scope of the package
+     */
+    addIndirectDependency(pkg, scope) {
+        var _a;
+        var _b, _c;
+        // nullish assigment to keep any previous assignments, including direct assigments
+        (_a = (_b = this.resolved)[_c = pkg.packageID()]) !== null && _a !== void 0 ? _a : (_b[_c] = new Dependency(pkg, 'indirect', scope));
+    }
+    hasDependency(pkg) {
+        return this.lookupDependency(pkg) !== undefined;
+    }
+    lookupDependency(pkg) {
+        return this.resolved[pkg.packageID()];
+    }
+    countDependencies() {
+        return Object.keys(this.resolved).length;
+    }
+    /**
+     * filterDependencies. Given a predicate function (a function returning a
+     * boolean for an input), return the packages that match the dependency
+     * relationship. Used for getting filtered lists of direct/indirect packages,
+     * runtime/development packages, etc.
+     *
+     * @param {Function} predicate
+     * @returns {Array<Package>}
+     */
+    filterDependencies(predicate) {
+        return Object.values(this.resolved).reduce((acc, dep) => {
+            if (predicate(dep)) {
+                acc.push(dep.depPackage);
+            }
+            return acc;
+        }, []);
+    }
+    /**
+     * directDependencies returns list of packages that are specified as direct dependencies
+     */
+    directDependencies() {
+        return this.filterDependencies((dep) => dep.relationship === 'direct');
+    }
+    /**
+     * indirectDependencies returns list of packages that are specified as indirect dependencies
+     */
+    indirectDependencies() {
+        return this.filterDependencies((dep) => dep.relationship === 'indirect');
+    }
+}
+exports.Manifest = Manifest;
+/**
+ * The dependencies used in a code artifact or "build target" are more
+ * accurately determined by the build process or commands used to generate the
+ * build target, rather than static processing of package files. BuildTarget is
+ * a specialized case of Manifest intended to assist in capturing this
+ * association of build target and dependencies.
+ *
+ * @extends {Manifest}
+ */
+class BuildTarget extends Manifest {
+    /**
+     * addBuildDependency will add a package as a direct runtime dependency and all of
+     * the packages transitive dependencies as indirect dependencies
+     *
+     * @param {Package} pkg package used to build the build target
+     */
+    addBuildDependency(pkg) {
+        this.addDirectDependency(pkg, 'runtime');
+        pkg.transitiveDependencies.forEach((transDep) => {
+            this.addIndirectDependency(transDep, 'runtime');
+        });
+    }
+}
+exports.BuildTarget = BuildTarget;
+
+
+/***/ }),
+
+/***/ 5439:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Metadata = exports.MAX_METADATA_SIZE = void 0;
+exports.MAX_METADATA_SIZE = 8;
+/**
+ * Metadata provides a means of associating additional metadata with a
+ * Dependency, Manifest, or Snapshot. Metadata are simple key-value pairs.
+ *
+ * @extends {Map<string, Scalar>}
+ */
+class Metadata extends Map {
+    /**
+     * Set a metadata key-value pair. Note that a maximum of 8 metadata key-value
+     * pairs may be set.
+     *
+     * @param {string} key
+     * @param {Scalar} value
+     * @returns {this}
+     */
+    set(key, value) {
+        if (this.size === exports.MAX_METADATA_SIZE) {
+            throw new Error(`Maximum size of Metadata exceeded. Only ${exports.MAX_METADATA_SIZE} key-value pairs may be specified`);
+        }
+        super.set(key, value);
+        return this;
+    }
+    /**
+     * Metadata has a custom toJSON serializer
+     *
+     * @returns {object}
+     */
+    toJSON() {
+        return Object.fromEntries(this.entries());
+    }
+}
+exports.Metadata = Metadata;
+
+
+/***/ }),
+
+/***/ 4715:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Package = void 0;
+const packageurl_js_1 = __nccwpck_require__(9727);
+/**
+ * Package is module that can be depended upon in manifest or build target. A
+ * package is what you would download from a registry like NPM.
+ */
+class Package {
+    /**
+     * A Package can be constructed with a PackageURL or a string conforming to
+     * the Package URL format (https://github.com/package-url/purl-spec)
+     *
+     * @param {PackageURL | string} pkg
+     */
+    constructor(pkg) {
+        if (typeof pkg === 'string') {
+            this.packageURL = packageurl_js_1.PackageURL.fromString(pkg);
+        }
+        else {
+            this.packageURL = pkg;
+        }
+        this.transitiveDependencies = [];
+    }
+    /**
+     * Associate a transitive depdendency with this package.
+     *
+     * @param {Package} pkg
+     * @returns {Package}
+     */
+    addTransitive(pkg) {
+        this.transitiveDependencies.push(pkg);
+        return this;
+    }
+    /**
+     * Add multiple packages as transitive dependencies.
+     *
+     * @param {Array} pkgs
+     * @returns {Package}
+     */
+    addTransitives(pkgs) {
+        pkgs.forEach((pkg) => this.addTransitive(pkg));
+        return this;
+    }
+    /**
+     * transitiveIDs provides the list of IDs of transitive dependencies
+     */
+    get transitiveIDs() {
+        return this.transitiveDependencies.map((dep) => dep.packageID());
+    }
+    /**
+     * packageID generates the unique package ID (currently, the Package URL)
+     *
+     * @returns {string}
+     */
+    packageID() {
+        return this.packageURL.toString();
+    }
+    /**
+     * name of the package
+     *
+     * @returns {string}
+     */
+    name() {
+        return this.packageURL.name;
+    }
+    /**
+     * version of the package
+     *
+     * @returns {string}
+     */
+    version() {
+        return this.packageURL.version || '';
+    }
+}
+exports.Package = Package;
+
+
+/***/ }),
+
+/***/ 7794:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.submitSnapshot = exports.Snapshot = exports.jobFromContext = void 0;
+const core = __importStar(__nccwpck_require__(5316));
+const github = __importStar(__nccwpck_require__(2189));
+const rest_1 = __nccwpck_require__(9646);
+const request_error_1 = __nccwpck_require__(7069);
+/**
+ * jobFromContext creates a job from a @actions/github Context
+ *
+ * @param {Context} context
+ * @returns {Job}
+ */
+function jobFromContext(context) {
+    return {
+        correlator: context.job,
+        id: context.runId.toString()
+    };
+}
+exports.jobFromContext = jobFromContext;
+/**
+ * Snapshot is the top-level container for Dependency Submisison
+ */
+class Snapshot {
+    /**
+     * All construor parameters of a Snapshot are optional, but can be specified for specific overrides
+     *
+     * @param {Context} context
+     * @param {Job} job
+     * @param {Detector} detector
+     * @param {Metadata} metadata
+     * @param {Date} date
+     * @param {number} version
+     */
+    constructor(context = github.context, job, detector, metadata, date = new Date(), version = 0) {
+        this.detector = detector;
+        this.metadata = metadata;
+        this.version = version;
+        this.job = job || jobFromContext(context);
+        this.sha = context.sha;
+        this.ref = context.ref;
+        this.scanned = date.toISOString();
+        this.manifests = {};
+    }
+    /**
+     * addManifest adds a manifest to the snapshot. At least one manifest must be added.
+     *
+     * @param {Manifest} manifest
+     */
+    addManifest(manifest) {
+        this.manifests[manifest.name] = manifest;
+    }
+    /**
+     * prettyJSON formats an intended version of the Snapshot (useful for debugging)
+     *
+     * @returns {string}
+     */
+    prettyJSON() {
+        return JSON.stringify(this, undefined, 4);
+    }
+}
+exports.Snapshot = Snapshot;
+/**
+ * submitSnapshot submits a snapshot to the Dependency Submission API
+ *
+ * @param {Snapshot} snapshot
+ * @param {Context} context
+ */
+function submitSnapshot(snapshot, context = github.context) {
+    return __awaiter(this, void 0, void 0, function* () {
+        core.setOutput('snapshot', JSON.stringify(snapshot));
+        core.notice('Submitting snapshot...');
+        core.notice(snapshot.prettyJSON());
+        const repo = context.repo;
+        const githubToken = core.getInput('token');
+        const octokit = new rest_1.Octokit({
+            auth: githubToken
+        });
+        try {
+            const response = yield octokit.request('POST /repos/{owner}/{repo}/dependency-graph/snapshots', {
+                headers: {
+                    accept: 'application/vnd.github.foo-bar-preview+json'
+                },
+                owner: repo.owner,
+                repo: repo.repo,
+                data: JSON.stringify(snapshot)
+            });
+            core.notice('Snapshot sucessfully created at ' + response.data.created_at.toString());
+        }
+        catch (error) {
+            if (error instanceof request_error_1.RequestError) {
+                core.error(`HTTP Status ${error.status} for request ${error.request.method} ${error.request.url}`);
+                if (error.response) {
+                    core.error(`Response body:\n${JSON.stringify(error.response.data, undefined, 2)}`);
+                }
+            }
+            if (error instanceof Error) {
+                core.error(error.message);
+                if (error.stack)
+                    core.error(error.stack);
+            }
+            throw new Error(`Failed to submit snapshot: ${error}`);
+        }
+    });
+}
+exports.submitSnapshot = submitSnapshot;
 
 
 /***/ }),

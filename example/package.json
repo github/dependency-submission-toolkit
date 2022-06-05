@@ -11,7 +11,8 @@
     "build": "tsc",
     "test": "jest",
     "test:watch": "jest --watch",
-    "package": "ncc build --source-map --license licenses.txt --out action-dist"
+    "package": "ncc build --source-map --license licenses.txt --out action-dist",
+    "all": "npm run test && npm run build && npm run package"
   },
   "repository": {
     "type": "git",
