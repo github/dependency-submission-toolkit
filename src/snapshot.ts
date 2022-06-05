@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import { Context } from '@actions/github/lib/context'
 import * as core from '@actions/core'
 import * as github from '@actions/github'

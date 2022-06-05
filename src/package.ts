@@ -2,7 +2,7 @@ import { PackageURL } from 'packageurl-js'
 
 export class Package {
   packageURL: PackageURL
-  transitiveDependencies: Array<Package>
+  transitiveDependencies: Array<Package> // eslint-disable-line no-use-before-define
 
   constructor(pkg: PackageURL | string) {
     if (typeof pkg === 'string') {
@@ -29,5 +29,13 @@ export class Package {
 
   packageID(): string {
     return this.packageURL.toString()
+  }
+
+  name(): string {
+    return this.packageURL.name
+  }
+
+  version(): string {
+    return this.packageURL.version || ''
   }
 }

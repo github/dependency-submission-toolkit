@@ -98,6 +98,42 @@ export class Manifest {
   lookupDependency(pkg: Package): Dependency | undefined {
     return this.resolved[pkg.packageID()]
   }
+
+  countDependencies(): number {
+    return Object.keys(this.resolved).length
+  }
+
+  /**
+   * filterDependencies. Given a predicate function (a function returning a
+   * boolean for an input), return the packages that match the dependency
+   * relationship. Used for getting filtered lists of direct/indirect packages,
+   * runtime/development packages, etc.
+   *
+   * @param {Function} predicate
+   * @returns {Array<Package>}
+   */
+  filterDependencies(predicate: (dep: Dependency) => boolean): Array<Package> {
+    return Object.values(this.resolved).reduce<Array<Package>>((acc, dep) => {
+      if (predicate(dep)) {
+        acc.push(dep.depPackage)
+      }
+      return acc
+    }, [])
+  }
+
+  /**
+   * directDependencies returns list of packages that are specified as direct dependencies
+   */
+  directDependencies(): Array<Package> {
+    return this.filterDependencies((dep) => dep.relationship === 'direct')
+  }
+
+  /**
+   * indirectDependencies returns list of packages that are specified as indirect dependencies
+   */
+  indirectDependencies() {
+    return this.filterDependencies((dep) => dep.relationship === 'indirect')
+  }
 }
 
 /**

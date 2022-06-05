@@ -10,6 +10,9 @@ import {
   submitSnapshot
 } from '@github/dependency-submission-toolkit'
 
+// top-level structure from the output of 'npm list'
+type NpmPackage = { name: string; version: string; dependencies: Dependencies }
+
 type Dependency = {
   version: string
   dependencies?: Dependencies
@@ -17,15 +20,23 @@ type Dependency = {
 
 type Dependencies = { [name: string]: Dependency }
 
-type NpmPackage = { name: string; version: string; dependencies: Dependencies }
-
+/**
+ * parseNameAndNamespace parses the name and namespace from a NPM package name.
+ * Namespace and name are URL-safe encoded, as expected by PackageURL
+ *
+ * @param {string} npmDepName
+ * @returns {[string, string]} tuple of namespace and name
+ */
 export function parseNameAndNamespace(npmDepName: string): [string, string] {
   const namespaceAndName = npmDepName.split('/')
 
   if (namespaceAndName.length == 2) {
-    return [encodeURIComponent(namespaceAndName[0]), namespaceAndName[1]]
+    return [
+      encodeURIComponent(namespaceAndName[0]),
+      encodeURIComponent(namespaceAndName[1])
+    ]
   } else if (namespaceAndName.length == 1) {
-    return ['', namespaceAndName[0]]
+    return ['', encodeURIComponent(namespaceAndName[0])]
   } else {
     throw new Error(
       `expectation violated: package '${npmDepName}' has more than one slash (/) in name`
@@ -33,7 +44,12 @@ export function parseNameAndNamespace(npmDepName: string): [string, string] {
   }
 }
 
-function parseDependencies(
+/**
+ * parseDependencies recursively parses the dependency tree provided by 'npm
+ * list' and returns an array of the top-level parent packages. If a package
+ * has already been added to the Graph, it does not reprocess its dependencies.
+ */
+export function parseDependencies(
   graph: Graph,
   dependencies: Dependencies
 ): Array<Package> {
@@ -46,7 +62,7 @@ function parseDependencies(
 
     let transitives = []
     // post-order traversal of the dependency tree with recursion.
-    // Recursion is assumed not to blow the stack as dependency trees are
+    // recursion is not expected to blow the stack as dependency trees are
     // unlikely to have significant depth
     if (dep.dependencies !== undefined) {
       transitives.push(...parseDependencies(graph, dep.dependencies))
@@ -58,6 +74,18 @@ function parseDependencies(
   })
 }
 
+/**
+ * createBuildTarget creates a BuildTarget--a specialized sub-class of Manifest
+ * intended to capture the dependencies of a speicific build-target, rather
+ * than all packages provided by the manifest enviroment. It parses the output
+ * from 'npm list' and distinguishes between direct dependencies (those the
+ * build-target explicity depends on) and indirect (transitive dependencies of
+ * the direct dependencies). It identifies all dependency packages as
+ * 'runtime',  since no development packages are included in a build-target.
+ *
+ * @param {NpmPackage} npmPackage
+ * @returns {BuildTarget}
+ */
 export function createBuildTarget(npmPackage: NpmPackage): BuildTarget {
   const graph = new Graph()
   const topLevelDependencies = parseDependencies(graph, npmPackage.dependencies)
@@ -69,13 +97,25 @@ export function createBuildTarget(npmPackage: NpmPackage): BuildTarget {
   return buildTarget
 }
 
+// This program uses 'npm list' to provide a list of all production
+// (non-development) dependencies and all transitive dependencies. This
+// provides transitive relationships unlike package.json, and output can be
+// configured to avoid issues present with parsing package-lock.json (such as
+// inclusion of workspace packages). This is provided as example to help guide
+// development.
 export async function main() {
-  const prodPackages = await exec.getExecOutput('npm', [
-    'ls',
-    '--prod',
-    '--all',
-    '--json'
-  ])
+  const prodPackages = await exec.getExecOutput(
+    'npm',
+    [
+      'list',
+      '--prod',
+      '--all',
+      // explicitly do not include NPM workspaces. This can cause results
+      '--workspaces=false',
+      '--json'
+    ],
+    { cwd: './' }
+  )
   if (prodPackages.exitCode !== 0) {
     core.error(prodPackages.stderr)
     core.setFailed("'npm ls' failed!")
