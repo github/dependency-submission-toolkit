@@ -37,7 +37,7 @@ describe('Snapshot', () => {
       new Metadata().set('hello', 'snapshot'),
       new Date('2022-06-04T05:07:06.457Z')
     )
-    snapshot.add(manifest)
+    snapshot.addManifest(manifest)
 
     expect(roundTripJSON(snapshot)).toEqual({
       detector: {

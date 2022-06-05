@@ -2,6 +2,9 @@ import { Package } from './package'
 
 import { Metadata } from './metadata'
 
+/**
+ * FileInfo specifies where the manifest or build-target are specified in the repository.
+ */
 type FileInfo = {
   source_location?: string // eslint-disable-line camelcase
 }
@@ -13,7 +16,7 @@ type FileInfo = {
 export type DependencyRelationship = 'direct' | 'indirect'
 
 /**
- * DependencyScope. A notation of whether the dependency is required for the
+ * DependencyScope is a notation of whether the dependency is required for the
  * primary build artifact (runtime), or is only used for development. Future
  * versions of this specification may allow for more granular scopes, like
  * `runtime:server`, `runtime:shipped`, `development:test`,
@@ -21,11 +24,30 @@ export type DependencyRelationship = 'direct' | 'indirect'
  */
 export type DependencyScope = 'runtime' | 'development'
 
+/**
+ * Dependency.
+ */
 class Dependency {
+  /**
+   * @type {Package}
+   */
   depPackage: Package
+  /**
+   * @type {DependencyRelationship}
+   */
   relationship?: DependencyRelationship
+  /**
+   * @type {DependencyScope}
+   */
   scope?: DependencyScope
 
+  /**
+   * constructor.
+   *
+   * @param {Package} depPackage
+   * @param {DependencyRelationship} relationship
+   * @param {DependencyScope} scope
+   */
   constructor(
     depPackage: Package,
     relationship?: DependencyRelationship,
@@ -36,20 +58,22 @@ class Dependency {
     this.scope = scope
   }
 
+  /**
+   * toJSON.
+   */
   toJSON() {
     return {
       package_url: this.depPackage.packageURL.toString(),
       relationship: this.relationship,
       scope: this.scope,
-      dependencies: this.depPackage.transitiveNames
+      dependencies: this.depPackage.transitiveIDs
     }
   }
 }
 
 /**
- * Manifest.
+ * Manifest defines the dependencies and the relationships of those dependencies.
  */
-
 export class Manifest {
   resolved: Record<string, Dependency>
   name: string
@@ -137,7 +161,11 @@ export class Manifest {
 }
 
 /**
- * BuildTarget.
+ * The dependencies used in a code artifact or "build target" are more
+ * accurately determined by the build process or commands used to generate the
+ * build target, rather than static processing of package files. BuildTarget is
+ * a specialized case of Manifest intended to assist in capturing this
+ * association of build target and dependencies.
  *
  * @extends {Manifest}
  */

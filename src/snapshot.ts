@@ -10,12 +10,22 @@ import { Metadata } from './metadata'
 Core functionality for creating a snapshot of a project's dependencies.
 */
 
+/**
+ * When multiple snapshots are submit, Job provides the means for Snapshots to
+ * be distinguished. Correlator and ID must be unique between different Snapshots
+ */
 export type Job = {
   correlator: string
   id: string | number
   html_url?: string // eslint-disable-line camelcase
 }
 
+/**
+ * jobFromContext creates a job from a @actions/github Context
+ *
+ * @param {Context} context
+ * @returns {Job}
+ */
 export function jobFromContext(context: Context): Job {
   return {
     correlator: context.job,
@@ -23,26 +33,72 @@ export function jobFromContext(context: Context): Job {
   }
 }
 
+/**
+ * Detector provides metadata details about the detector used to generate the snapshot
+ */
 export type Detector = {
   name: string
   url: string
   version: string
 }
 
+/**
+ * Manifests.
+ */
 type Manifests = Record<string, Manifest>
 
+/**
+ * ISO8601Date.
+ */
 type ISO8601Date = string
 
+/**
+ * Snapshot is the top-level container for Dependency Submisison
+ */
 export class Snapshot {
+  /**
+   * @type {Manifests}
+   */
   manifests: Manifests
+  /**
+   * @type {number}
+   */
   version: number
+  /**
+   * @type {Job}
+   */
   job: Job
-  sha: string // sha of the Git commit
-  ref: string // ref of the Git commit; example: "refs/heads/main"
+  /**
+   * @type {string}  sha of the Git commit
+   */
+  sha: string
+  /**
+   * @type {string}  ref of the Git commit; example: "refs/heads/main"
+   */
+  ref: string
+  /**
+   * @type {ISO8601Date}
+   */
   scanned: ISO8601Date
+  /**
+   * @type {Detector}
+   */
   detector?: Detector
+  /**
+   * @type {Metadata}
+   */
   metadata?: Metadata
 
+  /**
+   * All construor parameters of a Snapshot are optional, but can be specified for specific overrides
+   *
+   * @param {Context} context
+   * @param {Job} job
+   * @param {Detector} detector
+   * @param {Metadata} metadata
+   * @param {Date} date
+   * @param {number} version
+   */
   constructor(
     context: Context = github.context,
     job?: Job,
@@ -61,15 +117,31 @@ export class Snapshot {
     this.manifests = {}
   }
 
-  add(manifest: Manifest) {
+  /**
+   * addManifest adds a manifest to the snapshot. At least one manifest must be added.
+   *
+   * @param {Manifest} manifest
+   */
+  addManifest(manifest: Manifest) {
     this.manifests[manifest.name] = manifest
   }
 
+  /**
+   * prettyJSON formats an intended version of the Snapshot (useful for debugging)
+   *
+   * @returns {string}
+   */
   prettyJSON(): string {
     return JSON.stringify(this, undefined, 4)
   }
 }
 
+/**
+ * submitSnapshot submits a snapshot to the Dependency Submission API
+ *
+ * @param {Snapshot} snapshot
+ * @param {Context} context
+ */
 export async function submitSnapshot(
   snapshot: Snapshot,
   context: Context = github.context

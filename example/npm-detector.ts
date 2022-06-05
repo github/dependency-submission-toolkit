@@ -124,6 +124,6 @@ export async function main() {
   const npmPackage = JSON.parse(prodPackages.stdout) as NpmPackage
   const buildTarget = createBuildTarget(npmPackage)
   const snapshot = new Snapshot()
-  snapshot.add(buildTarget)
+  snapshot.addManifest(buildTarget)
   submitSnapshot(snapshot)
 }

@@ -63,8 +63,8 @@ describe('parseDependencies', () => {
 
     expect(pkgs).toHaveLength(1)
     expect(pkgs[0].packageID()).toEqual('pkg:npm/foo@1.0')
-    expect(pkgs[0].transitiveNames).toHaveLength(1)
-    expect(pkgs[0].transitiveNames[0]).toEqual('pkg:npm/bar@2.0')
+    expect(pkgs[0].transitiveIDs()).toHaveLength(1)
+    expect(pkgs[0].transitiveIDs()[0]).toEqual('pkg:npm/bar@2.0')
     expect(graph.countPackages()).toEqual(2)
   })
 })
