@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: 'Checkout Repository'
         uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - run: npm ci
       - name: Run dependency submission
         uses: ./
         id: example
