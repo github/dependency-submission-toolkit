@@ -731,16 +731,8 @@ exports.createBuildTarget = createBuildTarget;
 // development.
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log('starting up');
         const npmPackageDirectory = core.getInput('npm-package-directory');
-        const prodPackages = yield exec.getExecOutput('npm', [
-            'list',
-            '--prod',
-            '--all',
-            // explicitly do not include NPM workspaces. This can cause results
-            '--workspaces=false',
-            '--json'
-        ], { cwd: npmPackageDirectory });
+        const prodPackages = yield exec.getExecOutput('npm', ['list', '--prod', '--all', '--json'], { cwd: npmPackageDirectory });
         if (prodPackages.exitCode !== 0) {
             core.error(prodPackages.stderr);
             core.setFailed("'npm ls' failed!");

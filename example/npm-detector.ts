@@ -107,14 +107,7 @@ export async function main() {
   const npmPackageDirectory = core.getInput('npm-package-directory')
   const prodPackages = await exec.getExecOutput(
     'npm',
-    [
-      'list',
-      '--prod',
-      '--all',
-      // explicitly do not include NPM workspaces. This can cause results
-      '--workspaces=false',
-      '--json'
-    ],
+    ['list', '--prod', '--all', '--json'],
     { cwd: npmPackageDirectory }
   )
   if (prodPackages.exitCode !== 0) {
