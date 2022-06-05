@@ -2,7 +2,7 @@
   "name": "npm-dependency-submission-example",
   "version": "1.0.0",
   "description": "Example using the Dependency Submission Toolkit and npm list",
-  "main": "dist/index.js",
+  "main": "index.ts",
   "dependencies": {
     "@github/dependency-submission-toolkit": "file:../"
   },
@@ -11,7 +11,7 @@
     "build": "tsc",
     "test": "jest",
     "test:watch": "jest --watch",
-    "package": "ncc build --source-map --license licenses.txt --out action-dist index.ts"
+    "package": "ncc build --source-map --license licenses.txt --out action-dist"
   },
   "repository": {
     "type": "git",
