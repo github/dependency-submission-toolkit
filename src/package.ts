@@ -13,8 +13,14 @@ export class Package {
     this.transitiveDependencies = []
   }
 
-  addTransitive(pkg: Package) {
+  addTransitive(pkg: Package): Package {
     this.transitiveDependencies.push(pkg)
+    return this
+  }
+
+  addTransitives(pkgs: Array<Package>): Package {
+    pkgs.forEach((pkg) => this.addTransitive(pkg))
+    return this
   }
 
   get transitiveNames() {

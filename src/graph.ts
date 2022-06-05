@@ -36,6 +36,10 @@ export class Graph {
     }
   }
 
+  hasPackage(identifier: PackageURL | string): boolean {
+    return this.lookupPackage(identifier) !== undefined
+  }
+
   countPackages(): number {
     return Object.values(this.database).length
   }

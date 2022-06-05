@@ -45,7 +45,7 @@ export class Snapshot {
   metadata?: Metadata
 
   constructor(
-    context: Context,
+    context: Context = github.context,
     job?: Job,
     detector?: Detector,
     metadata?: Metadata,
@@ -69,40 +69,42 @@ export class Snapshot {
   prettyJSON(): string {
     return JSON.stringify(this, undefined, 4)
   }
+}
 
-  async submit() {
-    core.setOutput('snapshot', JSON.stringify(this))
-    core.notice('Submitting snapshot...')
-    core.notice(this.prettyJSON())
+export async function submitSnapshot(
+  snapshot: Snapshot,
+  context: Context = github.context
+) {
+  core.setOutput('snapshot', JSON.stringify(snapshot))
+  core.notice('Submitting snapshot...')
+  core.notice(snapshot.prettyJSON())
 
-    const context = github.context
-    const repo = context.repo
-    const githubToken = core.getInput('token')
-    const octokit = new Octokit({
-      auth: githubToken
-    })
+  const repo = context.repo
+  const githubToken = core.getInput('token')
+  const octokit = new Octokit({
+    auth: githubToken
+  })
 
-    try {
-      const response = await octokit.request(
-        'POST /repos/{owner}/{repo}/dependency-graph/snapshots',
-        {
-          headers: {
-            accept: 'application/vnd.github.foo-bar-preview+json'
-          },
-          owner: repo.owner,
-          repo: repo.repo,
-          data: JSON.stringify(this, undefined, 2)
-        }
-      )
-      core.notice(
-        'Snapshot sucessfully created at ' + response.data.created_at.toString()
-      )
-    } catch (error) {
-      if (error instanceof Error) {
-        core.warning(error.message)
-        if (error.stack) core.warning(error.stack)
+  try {
+    const response = await octokit.request(
+      'POST /repos/{owner}/{repo}/dependency-graph/snapshots',
+      {
+        headers: {
+          accept: 'application/vnd.github.foo-bar-preview+json'
+        },
+        owner: repo.owner,
+        repo: repo.repo,
+        data: JSON.stringify(snapshot)
       }
-      throw new Error(`Failed to submit snapshot: ${error}`)
+    )
+    core.notice(
+      'Snapshot sucessfully created at ' + response.data.created_at.toString()
+    )
+  } catch (error) {
+    if (error instanceof Error) {
+      core.warning(error.message)
+      if (error.stack) core.warning(error.stack)
     }
+    throw new Error(`Failed to submit snapshot: ${error}`)
   }
 }

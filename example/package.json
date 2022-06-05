@@ -1,0 +1,24 @@
+{
+  "name": "npm-dependency-submission-example",
+  "version": "1.0.0",
+  "description": "Example using the Dependency Submission Toolkit and npm list",
+  "main": "npm-detector.js",
+
+  "dependencies": {
+    "@github/dependency-submission-toolkit": "file:../"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/github/dependency-submission-toolkit.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/github/dependency-submission-toolkit/issues"
+  },
+  "homepage": "https://github.com/github/dependency-submission-toolkit#readme"
+}

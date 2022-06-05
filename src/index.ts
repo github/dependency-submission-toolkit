@@ -1,6 +1,15 @@
-import { Manifest } from './manifest'
 import { Graph } from './graph'
+import { Manifest, BuildTarget } from './manifest'
 import { Metadata } from './metadata'
-import { Snapshot } from './snapshot'
+import { Package } from './Package'
+import { Snapshot, submitSnapshot } from './snapshot'
 
-export { Manifest, Graph, Metadata, Snapshot }
+export {
+  BuildTarget,
+  Manifest,
+  Graph,
+  Metadata,
+  Package,
+  Snapshot,
+  submitSnapshot
+}
