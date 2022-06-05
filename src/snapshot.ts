@@ -2,6 +2,7 @@ import { Context } from '@actions/github/lib/context'
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { Octokit } from '@octokit/rest'
+import { RequestError } from '@octokit/request-error'
 
 import { Manifest } from './manifest'
 import { Metadata } from './metadata'
@@ -172,9 +173,17 @@ export async function submitSnapshot(
       'Snapshot sucessfully created at ' + response.data.created_at.toString()
     )
   } catch (error) {
+    if (error instanceof RequestError) {
+      core.error(
+        `HTTP Status ${error.status} for request ${error.request.method} ${error.request.url}`
+      )
+      if (error.response) {
+        core.error(`Response body:\n${error.response.data}`)
+      }
+    }
     if (error instanceof Error) {
-      core.warning(error.message)
-      if (error.stack) core.warning(error.stack)
+      core.error(error.message)
+      if (error.stack) core.error(error.stack)
     }
     throw new Error(`Failed to submit snapshot: ${error}`)
   }
