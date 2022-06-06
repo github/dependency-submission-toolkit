@@ -1,34 +1,65 @@
 # Dependency Submission Toolkit
 
-A TypeScript library for creating dependency snapshots and submitting them to the dependency submission API. Snapshots are a set of dependencies grouped by manifest with some related metadata. After submission to the API, the included dependencies appear in the repository's [dependency graph](https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/about-the-dependency-graph).  
+`@github/dependency-submission-toolkit` is a TypeScript library for
+creating dependency snapshots and submitting them to the dependency
+submission API. Snapshots are a set of dependencies grouped by manifest
+with some related metadata. After submission to the API, the included
+dependencies appear in the repository's [dependency
+graph](https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/about-the-dependency-graph).
 
 ## Usage
 
-Some useful commands to navigate using the library: 
+Some useful commands to navigate using the library:
 
-- `npm run build` to generate the JavaScript files
-- `npm run package` to compile the code into a single file
+- `npm run build` to compile TypeScript source
+- `npm run test` to run the tests
+    - `npm run test:watch` to run the tests in watch-mode (tests re-run
+    when files change)
+- `npm run format` to format files using prettier
+- `npm run lint` to lint files using ESLint
+- `npm run package` to compile the code into a single file using `ncc`
 - `npm run all` will do the above and additional commands (e.g. lint the code, test)
-- `npm publish` will create the JavaScript files before publishing the code
 
-### Writing Your Own Snapshot Action
+## Writing Your Own Dependency Submission Action
 
-To use the library to create and submit a snapshot for your packaging ecosystem, you'll need to:
+You may use classes from `@github/dependency-submission-toolkit` to help
+in building your own GitHub Action for submitting dependencies to the
+Dependency Submission API. At a high-level, the steps to use the classes
+are as follows:
 
-1. Write a `ProcessDependenciesContent` function that: 
-    - Uses the provided `readDependencies` to get the text data from a specified manifest path or with a specified manifest command (e.g. in Go you may use `go mod graph`)
-    - Take that text data and translate it into a `ParsedDependencies` map of the dependency package URL to the `Entry` object with the package name, version, package_url and any dependencies specified. The [package_url specification](https://github.com/package-url/purl-spec) has details on formatting (e.g. for npm, if the dependency is tunnel and version 0.0.1 the package_url is `pkg:npm/tunnel@0.0.1`)
-2. Use the `run` function and provide the following below to create and submit a snapshot:
-    - Your implemented `ProcessDependenciesContent`
-    - The `manifestInfo` - either a manifest path (e.g. `src/package.json`) in the repository or a command line command to obtain the data (e.g. in Go you may use `go mod graph`)
-    - `options` data: `Detector` data that includes the detector name, url, and version; `Metadata` data of max eight pieces of information of type null, boolean, string, number. You can find these definitions in the [`snapshot.ts`](https://github.com/github/dependency-submission-toolkit/blob/main/src/snapshot.ts) file.
+1. Create a `Graph` of all of the packages that could be included in your
+   manifest, as well define as the relationships between them.
 
-There is a provided [`src/example.ts`](https://github.com/github/dependency-submission-toolkit/blob/main/src/example.ts) file which demonstrates how to use the library, as it is detailed above.
+2. Using the packages defined in `Graph`, create a `Manifest` or
+   a `BuildTarget`, which defines the dependencies of build environment or
+   specific build artifact.
+
+3. Create a `Snapshot` to include one or more `Manifests` or
+   `BuildTargets`. The snapshot is the base container for submitting
+   dependencies to the Dependency Submission API.
+
+4. Follow the instructions for [Creating a JavaScript Action](https://docs.github.com/en/actions/creating-actions/creating-a-javascript-action). These include:
+
+    - Defining an `action.yml` action metadata file
+    - Compiling the JavaScript into a single script using `ncc`
+    - Testing your action in a workflow
+
+A full example action using this library is included in th `example/`
+directory. This example uses the output from `npm list` to create an accurate
+and complete graph of the dependencies used in this library. This action is
+also included in a workflow in this repository and run for each commit to the
+`main` branch.
+
 
 ## Testing
 
-This library uses the `jest` testing framework with tests located in the `/test` directory. To run the tests, you can use `npm test` to execute the test script. Otherwise you can use `jest` directly.
+This library uses the `jest` testing framework with tests co-located with
+source files. To run the tests, you can use `npm test` to run tests.
+Otherwise you can use `jest` directly.
 
 ## Installation
 
-The `dependency-submission-toolkit` library is hosted on GitHub's npm registry. Follow [the documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#installing-a-package) to install the package in your project.
+The `dependency-submission-toolkit` library is hosted on GitHub's npm
+registry. Follow [the
+documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#installing-a-package)
+to install the package in your project.
