@@ -80,6 +80,10 @@ export class Graph {
     return this.lookupPackage(identifier) !== undefined
   }
 
+  packages(): Package[] {
+    return Object.values(this.database)
+  }
+
   /**
    * countPackages returns the total number of packages tracked in the graph
    *

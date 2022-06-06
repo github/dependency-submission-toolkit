@@ -1,15 +1,17 @@
 import { Graph } from './graph'
-import { Manifest, BuildTarget } from './manifest'
+import { Manifest } from './manifest'
 import { Metadata } from './metadata'
 import { Package } from './package'
 import { Snapshot, submitSnapshot } from './snapshot'
+import { Recorder, ManifestRecorder } from './recorder'
 
 export {
-  BuildTarget,
   Manifest,
   Graph,
   Metadata,
   Package,
+  Recorder,
+  ManifestRecorder,
   Snapshot,
   submitSnapshot
 }

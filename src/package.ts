@@ -1,4 +1,5 @@
 import { PackageURL } from 'packageurl-js'
+import { UsageInformation } from './recorder'
 
 /**
  * Package is module that can be depended upon in manifest or build target. A
@@ -83,5 +84,18 @@ export class Package {
    */
   version(): string {
     return this.packageURL.version || ''
+  }
+
+  private usageInformations: UsageInformation[] = []
+  addUsageInformation(usageInformation: UsageInformation) {
+    this.usageInformations.push(usageInformation)
+  }
+
+  isDevDependency(): boolean {
+    return this.usageInformations.map(x => x.isDevDependency).reduce((prev, current) => prev && current, true)
+  }
+
+  isDirectDependency() {
+    return this.usageInformations.map(x => x.isDirectDependency).reduce((prev, current) => prev || current, false)
   }
 }

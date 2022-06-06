@@ -3,12 +3,14 @@ import * as exec from '@actions/exec'
 import { PackageURL } from 'packageurl-js'
 
 import {
-  Graph,
-  BuildTarget,
-  Package,
+  Manifest,
   Snapshot,
-  submitSnapshot
+  submitSnapshot,
+  Recorder,
+  ManifestRecorder,
+  Metadata
 } from '@github/dependency-submission-toolkit'
+import { UsageInformation } from '../dist/recorder'
 
 // top-level structure from the output of 'npm list'
 type NpmPackage = { name: string; version: string; dependencies: Dependencies }
@@ -44,57 +46,20 @@ export function parseNameAndNamespace(npmDepName: string): [string, string] {
   }
 }
 
-/**
- * parseDependencies recursively parses the dependency tree provided by 'npm
- * list' and returns an array of the top-level parent packages. If a package
- * has already been added to the Graph, it does not reprocess its dependencies.
- */
-export function parseDependencies(
-  graph: Graph,
-  dependencies: Dependencies
-): Array<Package> {
-  return Object.entries<Dependency>(dependencies).map(([depName, dep]) => {
+export function getManifest(npmPackage: NpmPackage): Manifest {
+  var recorder = new Recorder()
+  var manifestRecorder = recorder.createOrGetManifestRecorder(npmPackage.name, undefined, new Metadata())
+  registerDependencies(undefined, manifestRecorder, npmPackage.dependencies)
+  return manifestRecorder.manifest()
+}
+
+export function registerDependencies(parentDependency: PackageURL | undefined, manifestRecorder: ManifestRecorder, dependencies: Dependencies) {
+  Object.entries(dependencies).map(([depName, dep]) => {
     const [namespace, name] = parseNameAndNamespace(depName)
     const purl = new PackageURL('npm', namespace, name, dep.version, null, null)
 
-    // if the package has already been added to the graph, return the package early
-    if (graph.hasPackage(purl)) return graph.package(purl)
-
-    let transitives = []
-    // post-order traversal of the dependency tree with recursion.
-    // recursion is not expected to blow the stack as dependency trees are
-    // unlikely to have significant depth
-    if (dep.dependencies !== undefined) {
-      transitives.push(...parseDependencies(graph, dep.dependencies))
-    }
-
-    return graph
-      .package(new PackageURL('npm', namespace, name, dep.version, null, null))
-      .addTransitives(transitives)
+    manifestRecorder.registerUsage(purl, new UsageInformation({isDevDependency: false, isDirectDependency: false, parentIdentifier: parentDependency}))
   })
-}
-
-/**
- * createBuildTarget creates a BuildTarget--a specialized sub-class of Manifest
- * intended to capture the dependencies of a speicific build-target, rather
- * than all packages provided by the manifest enviroment. It parses the output
- * from 'npm list' and distinguishes between direct dependencies (those the
- * build-target explicity depends on) and indirect (transitive dependencies of
- * the direct dependencies). It identifies all dependency packages as
- * 'runtime',  since no development packages are included in a build-target.
- *
- * @param {NpmPackage} npmPackage
- * @returns {BuildTarget}
- */
-export function createBuildTarget(npmPackage: NpmPackage): BuildTarget {
-  const graph = new Graph()
-  const topLevelDependencies = parseDependencies(graph, npmPackage.dependencies)
-
-  const buildTarget = new BuildTarget(npmPackage.name)
-  topLevelDependencies.forEach((dep) => {
-    buildTarget.addBuildDependency(dep)
-  })
-  return buildTarget
 }
 
 // This program uses 'npm list' to provide a list of all production
@@ -116,8 +81,10 @@ export async function main() {
     return
   }
   const npmPackage = JSON.parse(prodPackages.stdout) as NpmPackage
-  const buildTarget = createBuildTarget(npmPackage)
+  const manifest = getManifest(npmPackage)
+  // const buildTarget = createBuildTarget(npmPackage)
   const snapshot = new Snapshot()
-  snapshot.addManifest(buildTarget)
+
+  snapshot.addManifest(manifest)
   submitSnapshot(snapshot)
 }

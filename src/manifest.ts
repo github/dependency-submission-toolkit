@@ -160,26 +160,3 @@ export class Manifest {
   }
 }
 
-/**
- * The dependencies used in a code artifact or "build target" are more
- * accurately determined by the build process or commands used to generate the
- * build target, rather than static processing of package files. BuildTarget is
- * a specialized case of Manifest intended to assist in capturing this
- * association of build target and dependencies.
- *
- * @extends {Manifest}
- */
-export class BuildTarget extends Manifest {
-  /**
-   * addBuildDependency will add a package as a direct runtime dependency and all of
-   * the packages transitive dependencies as indirect dependencies
-   *
-   * @param {Package} pkg package used to build the build target
-   */
-  addBuildDependency(pkg: Package) {
-    this.addDirectDependency(pkg, 'runtime')
-    pkg.transitiveDependencies.forEach((transDep) => {
-      this.addIndirectDependency(transDep, 'runtime')
-    })
-  }
-}
