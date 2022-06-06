@@ -1,12 +1,8 @@
 name: Example Dependency Submission
 on:
   push
-#on:
-  #push:
-    #branches:
-      #- main
 jobs:
-  go-action-detection:
+  example-submission:
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout Repository'

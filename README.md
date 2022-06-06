@@ -24,8 +24,8 @@ Some useful commands to navigate using the library:
 
 You may use classes from `@github/dependency-submission-toolkit` to help
 in building your own GitHub Action for submitting dependencies to the
-Dependency Submission API. At a high-level, the steps to use the classes
-are as follows:
+Dependency Submission API. At a high level, the steps to use the classes
+are:
 
 1. Create a `Graph` of all of the packages that could be included in your
    manifest, as well define as the relationships between them.
