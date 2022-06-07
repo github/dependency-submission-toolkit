@@ -1,7 +1,7 @@
 import { context } from '@actions/github'
 
 import { Manifest } from './manifest'
-import { Graph } from './graph'
+import { PackageCache } from './package-cache'
 import { Metadata } from './metadata'
 import { Snapshot } from './snapshot'
 
@@ -9,10 +9,10 @@ function roundTripJSON(obj: any): object {
   return JSON.parse(JSON.stringify(obj))
 }
 
-const graph = new Graph()
-graph
+const cache = new PackageCache()
+cache
   .package('pkg:npm/%40github/dependency-submission-toolkit@0.1.2')
-  .addTransitive(graph.package('pkg:npm/%40actions/core@1.6.0'))
+  .addTransitive(cache.package('pkg:npm/%40actions/core@1.6.0'))
 
 const manifest = new Manifest(
   'test',
@@ -20,9 +20,9 @@ const manifest = new Manifest(
   new Metadata().set('hello', 'world')
 )
 manifest.addDirectDependency(
-  graph.package('pkg:npm/%40github/dependency-submission-toolkit@0.1.2')
+  cache.package('pkg:npm/%40github/dependency-submission-toolkit@0.1.2')
 )
-manifest.addIndirectDependency(graph.package('pkg:npm/%40actions/core@1.6.0'))
+manifest.addIndirectDependency(cache.package('pkg:npm/%40actions/core@1.6.0'))
 
 // add bogus git data to the context
 context.sha = '0000000000000000000000000000000000000000'

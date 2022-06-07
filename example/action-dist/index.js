@@ -9921,23 +9921,23 @@ exports.parseNameAndNamespace = parseNameAndNamespace;
 /**
  * parseDependencies recursively parses the dependency tree provided by 'npm
  * list' and returns an array of the top-level parent packages. If a package
- * has already been added to the Graph, it does not reprocess its dependencies.
+ * has already been added to the PackageCache, it does not reprocess its dependencies.
  */
-function parseDependencies(graph, dependencies) {
+function parseDependencies(cache, dependencies) {
     return Object.entries(dependencies).map(([depName, dep]) => {
         const [namespace, name] = parseNameAndNamespace(depName);
         const purl = new packageurl_js_1.PackageURL('npm', namespace, name, dep.version, null, null);
-        // if the package has already been added to the graph, return the package early
-        if (graph.hasPackage(purl))
-            return graph.package(purl);
+        // if the package has already been added to the cache, return the package early
+        if (cache.hasPackage(purl))
+            return cache.package(purl);
         let transitives = [];
         // post-order traversal of the dependency tree with recursion.
         // recursion is not expected to blow the stack as dependency trees are
         // unlikely to have significant depth
         if (dep.dependencies !== undefined) {
-            transitives.push(...parseDependencies(graph, dep.dependencies));
+            transitives.push(...parseDependencies(cache, dep.dependencies));
         }
-        return graph
+        return cache
             .package(new packageurl_js_1.PackageURL('npm', namespace, name, dep.version, null, null))
             .addTransitives(transitives);
     });
@@ -9956,8 +9956,8 @@ exports.parseDependencies = parseDependencies;
  * @returns {BuildTarget}
  */
 function createBuildTarget(npmPackage) {
-    const graph = new dependency_submission_toolkit_1.Graph();
-    const topLevelDependencies = parseDependencies(graph, npmPackage.dependencies);
+    const cache = new dependency_submission_toolkit_1.PackageCache();
+    const topLevelDependencies = parseDependencies(cache, npmPackage.dependencies);
     const buildTarget = new dependency_submission_toolkit_1.BuildTarget(npmPackage.name);
     topLevelDependencies.forEach((dep) => {
         buildTarget.addBuildDependency(dep);
@@ -9992,109 +9992,15 @@ exports.main = main;
 
 /***/ }),
 
-/***/ 6115:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Graph = void 0;
-const packageurl_js_1 = __nccwpck_require__(9727);
-const package_1 = __nccwpck_require__(4715);
-/**
- * Use Graph to define packages and the relationships between packages. You may
- * think of Graph as the universe of possible packages to be used in Manifests
- * and BuildTargets. Graph is not seralized to the Dependency Submission API.
- */
-class Graph {
-    constructor() {
-        this.database = {};
-    }
-    /**
-     * 'graph.package()' will be the most commonly used method of Graph.
-     * package(identifier) will create and add a new Package to the Graph if no
-     * Packaging with a matching identifer exists in Graph, or return an existing
-     * Package if a match is found. The mutation in this case is expected; do not
-     * use package(identifier) to determine if a package is already added.
-     * Instead, use hasPackage or lookupPackage.
-     *
-     *
-     * @param {PackageURL | string} identifier PackageURL or string matching the Package URL format (https://github.com/package-url/purl-spec)
-     * @returns {Package}
-     */
-    package(identifier) {
-        const existingDep = this.lookupPackage(identifier);
-        if (existingDep) {
-            return existingDep;
-        }
-        const dep = new package_1.Package(identifier);
-        this.addPackage(dep);
-        return dep;
-    }
-    /**
-     * addPackage adds a package, even if it already exists in the graph.
-     *
-     * @param {Package} pkg
-     */
-    addPackage(pkg) {
-        this.database[pkg.packageURL.toString()] = pkg;
-    }
-    /**
-     * removePackage a removes a package from the graph
-     *
-     * @param {Package} pkg
-     */
-    removePackage(pkg) {
-        delete this.database[pkg.packageURL.toString()];
-    }
-    /**
-     * lookupPackage looks up and returns a package with a matching identifier,
-     * if one exists.
-     *
-     * @param {PackageURL | string} identifier
-     * @returns {Package | undefined}
-     */
-    lookupPackage(identifier) {
-        if (typeof identifier === 'string') {
-            const purl = packageurl_js_1.PackageURL.fromString(identifier);
-            return this.database[purl.toString()];
-        }
-        else {
-            return this.database[identifier.toString()];
-        }
-    }
-    /**
-     * hasPackage returns true if a package with a matching identifier exists.
-     *
-     * @param {PackageURL | string} identifier
-     * @returns {boolean}
-     */
-    hasPackage(identifier) {
-        return this.lookupPackage(identifier) !== undefined;
-    }
-    /**
-     * countPackages returns the total number of packages tracked in the graph
-     *
-     * @returns {number}
-     */
-    countPackages() {
-        return Object.values(this.database).length;
-    }
-}
-exports.Graph = Graph;
-
-
-/***/ }),
-
 /***/ 3571:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.submitSnapshot = exports.Snapshot = exports.Package = exports.Metadata = exports.Graph = exports.Manifest = exports.BuildTarget = void 0;
-const graph_1 = __nccwpck_require__(6115);
-Object.defineProperty(exports, "Graph", ({ enumerable: true, get: function () { return graph_1.Graph; } }));
+exports.submitSnapshot = exports.Snapshot = exports.Package = exports.Metadata = exports.PackageCache = exports.Manifest = exports.BuildTarget = void 0;
+const package_cache_1 = __nccwpck_require__(833);
+Object.defineProperty(exports, "PackageCache", ({ enumerable: true, get: function () { return package_cache_1.PackageCache; } }));
 const manifest_1 = __nccwpck_require__(4786);
 Object.defineProperty(exports, "Manifest", ({ enumerable: true, get: function () { return manifest_1.Manifest; } }));
 Object.defineProperty(exports, "BuildTarget", ({ enumerable: true, get: function () { return manifest_1.BuildTarget; } }));
@@ -10290,6 +10196,100 @@ class Metadata extends Map {
     }
 }
 exports.Metadata = Metadata;
+
+
+/***/ }),
+
+/***/ 833:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PackageCache = void 0;
+const packageurl_js_1 = __nccwpck_require__(9727);
+const package_1 = __nccwpck_require__(4715);
+/**
+ * Use PackageCache to define packages and the relationships between packages. You may
+ * think of PackageCache as the universe of possible packages to be used in Manifests
+ * and BuildTargets. PackageCache is not serialized to the Dependency Submission API.
+ */
+class PackageCache {
+    constructor() {
+        this.database = {};
+    }
+    /**
+     * 'cache.package()' will be the most commonly used method of PackageCache.
+     * package(identifier) will create and add a new Package to the PackageCache if no
+     * Packaging with a matching identifer exists in PackageCache, or return an existing
+     * Package if a match is found. The mutation in this case is expected; do not
+     * use package(identifier) to determine if a package is already added.
+     * Instead, use hasPackage or lookupPackage.
+     *
+     *
+     * @param {PackageURL | string} identifier PackageURL or string matching the Package URL format (https://github.com/package-url/purl-spec)
+     * @returns {Package}
+     */
+    package(identifier) {
+        const existingDep = this.lookupPackage(identifier);
+        if (existingDep) {
+            return existingDep;
+        }
+        const dep = new package_1.Package(identifier);
+        this.addPackage(dep);
+        return dep;
+    }
+    /**
+     * addPackage adds a package, even if it already exists in the cache.
+     *
+     * @param {Package} pkg
+     */
+    addPackage(pkg) {
+        this.database[pkg.packageURL.toString()] = pkg;
+    }
+    /**
+     * removePackage a removes a package from the cache
+     *
+     * @param {Package} pkg
+     */
+    removePackage(pkg) {
+        delete this.database[pkg.packageURL.toString()];
+    }
+    /**
+     * lookupPackage looks up and returns a package with a matching identifier,
+     * if one exists.
+     *
+     * @param {PackageURL | string} identifier
+     * @returns {Package | undefined}
+     */
+    lookupPackage(identifier) {
+        if (typeof identifier === 'string') {
+            const purl = packageurl_js_1.PackageURL.fromString(identifier);
+            return this.database[purl.toString()];
+        }
+        else {
+            return this.database[identifier.toString()];
+        }
+    }
+    /**
+     * hasPackage returns true if a package with a matching identifier exists.
+     *
+     * @param {PackageURL | string} identifier
+     * @returns {boolean}
+     */
+    hasPackage(identifier) {
+        return this.lookupPackage(identifier) !== undefined;
+    }
+    /**
+     * countPackages returns the total number of packages tracked in the cache
+     *
+     * @returns {number}
+     */
+    countPackages() {
+        return Object.values(this.database).length;
+    }
+}
+exports.PackageCache = PackageCache;
 
 
 /***/ }),

@@ -1,18 +1,18 @@
 import { PackageURL } from 'packageurl-js'
 import { Package } from './package'
-import { Graph } from './graph'
+import { PackageCache } from './package-cache'
 
 const purl = 'pkg:npm/%40github/dependency-submission-toolkit@0.1.2'
 
-describe('Graph', () => {
+describe('PackageCache', () => {
   describe('with no packages', () => {
-    const graph = new Graph()
+    const cache = new PackageCache()
     it('adds and remove Package', () => {
       const dep = new Package(purl)
-      graph.addPackage(dep)
-      expect(graph.countPackages()).toBe(1)
-      graph.removePackage(dep)
-      expect(graph.countPackages()).toBe(0)
+      cache.addPackage(dep)
+      expect(cache.countPackages()).toBe(1)
+      cache.removePackage(dep)
+      expect(cache.countPackages()).toBe(0)
     })
     it('constructs a package with .package using PackageURL', () => {
       const packageURL = new PackageURL(
@@ -23,21 +23,21 @@ describe('Graph', () => {
         null,
         null
       )
-      const dep = graph.package(packageURL)
+      const dep = cache.package(packageURL)
       expect(dep).toBeInstanceOf(Package)
-      expect(graph.countPackages()).toBe(1)
+      expect(cache.countPackages()).toBe(1)
 
       // purposely using reference equality with 'toBe'
-      expect(graph.package(packageURL)).toBe(dep)
+      expect(cache.package(packageURL)).toBe(dep)
     })
     it('constructs a package with .package using string', () => {
-      const graph = new Graph()
-      const dep = graph.package(purl)
+      const cache = new PackageCache()
+      const dep = cache.package(purl)
       expect(dep).toBeInstanceOf(Package)
-      expect(graph.countPackages()).toBe(1)
+      expect(cache.countPackages()).toBe(1)
 
       // purposely using reference equality with 'toBe'
-      expect(graph.package(purl)).toBe(dep)
+      expect(cache.package(purl)).toBe(dep)
     })
   })
 })

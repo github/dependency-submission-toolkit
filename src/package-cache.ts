@@ -2,11 +2,11 @@ import { PackageURL } from 'packageurl-js'
 import { Package } from './package'
 
 /**
- * Use Graph to define packages and the relationships between packages. You may
- * think of Graph as the universe of possible packages to be used in Manifests
- * and BuildTargets. Graph is not seralized to the Dependency Submission API.
+ * Use PackageCache to define packages and the relationships between packages. You may
+ * think of PackageCache as the universe of possible packages to be used in Manifests
+ * and BuildTargets. PackageCache is not serialized to the Dependency Submission API.
  */
-export class Graph {
+export class PackageCache {
   private database: Record<string, Package>
 
   constructor() {
@@ -14,9 +14,9 @@ export class Graph {
   }
 
   /**
-   * 'graph.package()' will be the most commonly used method of Graph.
-   * package(identifier) will create and add a new Package to the Graph if no
-   * Packaging with a matching identifer exists in Graph, or return an existing
+   * 'cache.package()' will be the most commonly used method of PackageCache.
+   * package(identifier) will create and add a new Package to the PackageCache if no
+   * Packaging with a matching identifer exists in PackageCache, or return an existing
    * Package if a match is found. The mutation in this case is expected; do not
    * use package(identifier) to determine if a package is already added.
    * Instead, use hasPackage or lookupPackage.
@@ -37,7 +37,7 @@ export class Graph {
   }
 
   /**
-   * addPackage adds a package, even if it already exists in the graph.
+   * addPackage adds a package, even if it already exists in the cache.
    *
    * @param {Package} pkg
    */
@@ -46,7 +46,7 @@ export class Graph {
   }
 
   /**
-   * removePackage a removes a package from the graph
+   * removePackage a removes a package from the cache
    *
    * @param {Package} pkg
    */
@@ -81,7 +81,7 @@ export class Graph {
   }
 
   /**
-   * countPackages returns the total number of packages tracked in the graph
+   * countPackages returns the total number of packages tracked in the cache
    *
    * @returns {number}
    */

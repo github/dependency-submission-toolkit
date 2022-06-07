@@ -4,7 +4,7 @@ import {
   createBuildTarget
 } from './npm-detector'
 
-import { Graph } from '@github/dependency-submission-toolkit'
+import { PackageCache } from '@github/dependency-submission-toolkit'
 
 describe('parseNameAndNamespace', () => {
   test('parses single name, no namespace', () => {
@@ -35,37 +35,37 @@ describe('parseNameAndNamespace', () => {
 describe('parseDependencies', () => {
   test('parse single dependency', () => {
     const dependencies = { foo: { version: '1.0' } }
-    const graph = new Graph()
-    const pkgs = parseDependencies(graph, dependencies)
+    const cache = new PackageCache()
+    const pkgs = parseDependencies(cache, dependencies)
 
     expect(pkgs).toHaveLength(1)
     expect(pkgs[0].packageID()).toEqual('pkg:npm/foo@1.0')
-    expect(graph.countPackages()).toEqual(1)
+    expect(cache.countPackages()).toEqual(1)
   })
 
   test('parse multiple dependencies, single depth', () => {
     const dependencies = { foo: { version: '1.0' }, bar: { version: '2.0' } }
-    const graph = new Graph()
-    const pkgs = parseDependencies(graph, dependencies)
+    const cache = new PackageCache()
+    const pkgs = parseDependencies(cache, dependencies)
 
     expect(pkgs).toHaveLength(2)
     expect(pkgs[0].packageID()).toEqual('pkg:npm/foo@1.0')
     expect(pkgs[1].packageID()).toEqual('pkg:npm/bar@2.0')
-    expect(graph.countPackages()).toEqual(2)
+    expect(cache.countPackages()).toEqual(2)
   })
 
   test('parse multiple depth', () => {
     const dependencies = {
       foo: { version: '1.0', dependencies: { bar: { version: '2.0' } } }
     }
-    const graph = new Graph()
-    const pkgs = parseDependencies(graph, dependencies)
+    const cache = new PackageCache()
+    const pkgs = parseDependencies(cache, dependencies)
 
     expect(pkgs).toHaveLength(1)
     expect(pkgs[0].packageID()).toEqual('pkg:npm/foo@1.0')
     expect(pkgs[0].transitiveIDs).toHaveLength(1)
     expect(pkgs[0].transitiveIDs[0]).toEqual('pkg:npm/bar@2.0')
-    expect(graph.countPackages()).toEqual(2)
+    expect(cache.countPackages()).toEqual(2)
   })
 })
 

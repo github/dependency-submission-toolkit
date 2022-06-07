@@ -3,7 +3,7 @@ import * as exec from '@actions/exec'
 import { PackageURL } from 'packageurl-js'
 
 import {
-  Graph,
+  PackageCache,
   BuildTarget,
   Package,
   Snapshot,
@@ -47,28 +47,28 @@ export function parseNameAndNamespace(npmDepName: string): [string, string] {
 /**
  * parseDependencies recursively parses the dependency tree provided by 'npm
  * list' and returns an array of the top-level parent packages. If a package
- * has already been added to the Graph, it does not reprocess its dependencies.
+ * has already been added to the PackageCache, it does not reprocess its dependencies.
  */
 export function parseDependencies(
-  graph: Graph,
+  cache: PackageCache,
   dependencies: Dependencies
 ): Array<Package> {
   return Object.entries<Dependency>(dependencies).map(([depName, dep]) => {
     const [namespace, name] = parseNameAndNamespace(depName)
     const purl = new PackageURL('npm', namespace, name, dep.version, null, null)
 
-    // if the package has already been added to the graph, return the package early
-    if (graph.hasPackage(purl)) return graph.package(purl)
+    // if the package has already been added to the cache, return the package early
+    if (cache.hasPackage(purl)) return cache.package(purl)
 
     let transitives = []
     // post-order traversal of the dependency tree with recursion.
     // recursion is not expected to blow the stack as dependency trees are
     // unlikely to have significant depth
     if (dep.dependencies !== undefined) {
-      transitives.push(...parseDependencies(graph, dep.dependencies))
+      transitives.push(...parseDependencies(cache, dep.dependencies))
     }
 
-    return graph
+    return cache
       .package(new PackageURL('npm', namespace, name, dep.version, null, null))
       .addTransitives(transitives)
   })
@@ -87,8 +87,8 @@ export function parseDependencies(
  * @returns {BuildTarget}
  */
 export function createBuildTarget(npmPackage: NpmPackage): BuildTarget {
-  const graph = new Graph()
-  const topLevelDependencies = parseDependencies(graph, npmPackage.dependencies)
+  const cache = new PackageCache()
+  const topLevelDependencies = parseDependencies(cache, npmPackage.dependencies)
 
   const buildTarget = new BuildTarget(npmPackage.name)
   topLevelDependencies.forEach((dep) => {

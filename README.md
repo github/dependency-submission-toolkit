@@ -27,10 +27,10 @@ in building your own GitHub Action for submitting dependencies to the
 Dependency Submission API. At a high level, the steps to use the classes
 are:
 
-1. Create a `Graph` of all of the packages that could be included in your
+1. Create a `PackageCache` of all of the packages that could be included in your
    manifest, as well define as the relationships between them.
 
-2. Using the packages defined in `Graph`, create a `Manifest` or
+2. Using the packages defined in `PackageCache`, create a `Manifest` or
    a `BuildTarget`, which defines the dependencies of build environment or
    specific build artifact.
 
