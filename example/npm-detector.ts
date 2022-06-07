@@ -60,17 +60,17 @@ export function parseDependencies(
     // if the package has already been added to the cache, return the package early
     if (cache.hasPackage(purl)) return cache.package(purl)
 
-    let transitives = []
+    let pkgs = []
     // post-order traversal of the dependency tree with recursion.
     // recursion is not expected to blow the stack as dependency trees are
     // unlikely to have significant depth
     if (dep.dependencies !== undefined) {
-      transitives.push(...parseDependencies(cache, dep.dependencies))
+      pkgs.push(...parseDependencies(cache, dep.dependencies))
     }
 
     return cache
       .package(new PackageURL('npm', namespace, name, dep.version, null, null))
-      .addTransitives(transitives)
+      .dependsOnPackages(pkgs)
   })
 }
 

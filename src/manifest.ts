@@ -66,7 +66,7 @@ class Dependency {
       package_url: this.depPackage.packageURL.toString(),
       relationship: this.relationship,
       scope: this.scope,
-      dependencies: this.depPackage.transitiveIDs
+      dependencies: this.depPackage.packageDependencyIDs
     }
   }
 }
@@ -172,13 +172,13 @@ export class Manifest {
 export class BuildTarget extends Manifest {
   /**
    * addBuildDependency will add a package as a direct runtime dependency and all of
-   * the packages transitive dependencies as indirect dependencies
+   * the package's transitive dependencies as indirect dependencies
    *
    * @param {Package} pkg package used to build the build target
    */
   addBuildDependency(pkg: Package) {
     this.addDirectDependency(pkg, 'runtime')
-    pkg.transitiveDependencies.forEach((transDep) => {
+    pkg.dependencies.forEach((transDep) => {
       this.addIndirectDependency(transDep, 'runtime')
     })
   }

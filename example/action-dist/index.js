@@ -9930,16 +9930,16 @@ function parseDependencies(cache, dependencies) {
         // if the package has already been added to the cache, return the package early
         if (cache.hasPackage(purl))
             return cache.package(purl);
-        let transitives = [];
+        let pkgs = [];
         // post-order traversal of the dependency tree with recursion.
         // recursion is not expected to blow the stack as dependency trees are
         // unlikely to have significant depth
         if (dep.dependencies !== undefined) {
-            transitives.push(...parseDependencies(cache, dep.dependencies));
+            pkgs.push(...parseDependencies(cache, dep.dependencies));
         }
         return cache
             .package(new packageurl_js_1.PackageURL('npm', namespace, name, dep.version, null, null))
-            .addTransitives(transitives);
+            .dependsOnPackages(pkgs);
     });
 }
 exports.parseDependencies = parseDependencies;
@@ -10046,7 +10046,7 @@ class Dependency {
             package_url: this.depPackage.packageURL.toString(),
             relationship: this.relationship,
             scope: this.scope,
-            dependencies: this.depPackage.transitiveIDs
+            dependencies: this.depPackage.packageDependencyIDs
         };
     }
 }
@@ -10140,13 +10140,13 @@ exports.Manifest = Manifest;
 class BuildTarget extends Manifest {
     /**
      * addBuildDependency will add a package as a direct runtime dependency and all of
-     * the packages transitive dependencies as indirect dependencies
+     * the package's transitive dependencies as indirect dependencies
      *
      * @param {Package} pkg package used to build the build target
      */
     addBuildDependency(pkg) {
         this.addDirectDependency(pkg, 'runtime');
-        pkg.transitiveDependencies.forEach((transDep) => {
+        pkg.dependencies.forEach((transDep) => {
             this.addIndirectDependency(transDep, 'runtime');
         });
     }
@@ -10320,33 +10320,33 @@ class Package {
         else {
             this.packageURL = pkg;
         }
-        this.transitiveDependencies = [];
+        this.dependencies = [];
     }
     /**
-     * Associate a transitive depdendency with this package.
+     * Associate a package child dependency with this package
      *
      * @param {Package} pkg
      * @returns {Package}
      */
-    addTransitive(pkg) {
-        this.transitiveDependencies.push(pkg);
+    dependsOn(pkg) {
+        this.dependencies.push(pkg);
         return this;
     }
     /**
-     * Add multiple packages as transitive dependencies.
+     * Add multiple packages as dependencies.
      *
      * @param {Array} pkgs
      * @returns {Package}
      */
-    addTransitives(pkgs) {
-        pkgs.forEach((pkg) => this.addTransitive(pkg));
+    dependsOnPackages(pkgs) {
+        pkgs.forEach((pkg) => this.dependsOn(pkg));
         return this;
     }
     /**
-     * transitiveIDs provides the list of IDs of transitive dependencies
+     * packageDependencyIDs provides the list of package IDs of package dependencies
      */
-    get transitiveIDs() {
-        return this.transitiveDependencies.map((dep) => dep.packageID());
+    get packageDependencyIDs() {
+        return this.dependencies.map((dep) => dep.packageID());
     }
     /**
      * packageID generates the unique package ID (currently, the Package URL)

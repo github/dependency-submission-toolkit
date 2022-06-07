@@ -12,7 +12,7 @@ function roundTripJSON(obj: any): object {
 const cache = new PackageCache()
 cache
   .package('pkg:npm/%40github/dependency-submission-toolkit@0.1.2')
-  .addTransitive(cache.package('pkg:npm/%40actions/core@1.6.0'))
+  .dependsOn(cache.package('pkg:npm/%40actions/core@1.6.0'))
 
 const manifest = new Manifest(
   'test',

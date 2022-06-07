@@ -12,7 +12,7 @@ export class Package {
   /**
    * @type {Array<Package>}
    */
-  transitiveDependencies: Array<Package> // eslint-disable-line no-use-before-define
+  dependencies: Array<Package> // eslint-disable-line no-use-before-define
 
   /**
    * A Package can be constructed with a PackageURL or a string conforming to
@@ -26,36 +26,36 @@ export class Package {
     } else {
       this.packageURL = pkg
     }
-    this.transitiveDependencies = []
+    this.dependencies = []
   }
 
   /**
-   * Associate a transitive depdendency with this package.
+   * Associate a package child dependency with this package
    *
    * @param {Package} pkg
    * @returns {Package}
    */
-  addTransitive(pkg: Package): Package {
-    this.transitiveDependencies.push(pkg)
+  dependsOn(pkg: Package): Package {
+    this.dependencies.push(pkg)
     return this
   }
 
   /**
-   * Add multiple packages as transitive dependencies.
+   * Add multiple packages as dependencies.
    *
    * @param {Array} pkgs
    * @returns {Package}
    */
-  addTransitives(pkgs: Array<Package>): Package {
-    pkgs.forEach((pkg) => this.addTransitive(pkg))
+  dependsOnPackages(pkgs: Array<Package>): Package {
+    pkgs.forEach((pkg) => this.dependsOn(pkg))
     return this
   }
 
   /**
-   * transitiveIDs provides the list of IDs of transitive dependencies
+   * packageDependencyIDs provides the list of package IDs of package dependencies
    */
-  get transitiveIDs() {
-    return this.transitiveDependencies.map((dep) => dep.packageID())
+  get packageDependencyIDs() {
+    return this.dependencies.map((dep) => dep.packageID())
   }
 
   /**
