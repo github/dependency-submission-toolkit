@@ -84,7 +84,7 @@ export class Snapshot {
   /**
    * @type {Detector}
    */
-  detector?: Detector
+  detector: Detector
   /**
    * @type {Metadata}
    */
@@ -93,17 +93,17 @@ export class Snapshot {
   /**
    * All construor parameters of a Snapshot are optional, but can be specified for specific overrides
    *
+   * @param {Detector} detector
    * @param {Context} context
    * @param {Job} job
-   * @param {Detector} detector
    * @param {Metadata} metadata
    * @param {Date} date
    * @param {number} version
    */
   constructor(
+    detector: Detector,
     context: Context = github.context,
     job?: Job,
-    detector?: Detector,
     metadata?: Metadata,
     date: Date = new Date(),
     version: number = 0
@@ -152,7 +152,7 @@ export async function submitSnapshot(
   core.notice(snapshot.prettyJSON())
 
   const repo = context.repo
-  const githubToken = core.getInput('token')
+  const githubToken = core.getInput('token') || core.getIDToken
   const octokit = new Octokit({
     auth: githubToken
   })
