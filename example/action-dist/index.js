@@ -10039,7 +10039,11 @@ class Dependency {
         this.scope = scope;
     }
     /**
-     * toJSON.
+     * toJSON is a custom JSON-serializer. It will be called when JSON.stringfy()
+     * is called with this class or any object containing this class.
+     *
+     * @returns {object} with keys package_url, relationship, scope, and
+     * dependency, per the Snapshot format
      */
     toJSON() {
         return {
