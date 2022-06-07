@@ -99,5 +99,4 @@ __tests__/runner/*
 lib/**/*
 
 # Ignore output files
-/dist
 dist
