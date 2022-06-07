@@ -1,0 +1,27 @@
+{
+  "name": "npm-dependency-submission-example",
+  "version": "1.0.0",
+  "description": "Example using the Dependency Submission Toolkit and npm list",
+  "main": "index.ts",
+  "dependencies": {
+    "@github/dependency-submission-toolkit": "file:../"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "package": "ncc build --source-map --license licenses.txt --out action-dist",
+    "all": "npm run test && npm run build && npm run package"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/github/dependency-submission-toolkit.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/github/dependency-submission-toolkit/issues"
+  },
+  "homepage": "https://github.com/github/dependency-submission-toolkit#readme"
+}

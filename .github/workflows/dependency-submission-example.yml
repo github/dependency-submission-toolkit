@@ -1,0 +1,16 @@
+name: Example Dependency Submission
+on:
+  push
+jobs:
+  example-submission:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - run: npm ci
+      - name: Run dependency submission
+        uses: ./
+        id: example
+        with:
+          npm-package-directory: ./

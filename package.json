@@ -2,7 +2,7 @@
   "name": "@github/dependency-submission-toolkit",
   "version": "1.0.1",
   "description": "A TypeScript library for creating dependency snapshots.",
-  "main": "dist/index.js",
+  "main": "src/index.ts",
   "prepare": "npm run build",
   "types": "dist/index.d.ts",
   "directories": {
@@ -11,12 +11,12 @@
   "scripts": {
     "build": "tsc",
     "format": "prettier --write '**/*.ts'",
-    "format-check": "prettier --check '**/*.ts'",
-    "lint": "eslint --fix src/**/*.ts test/**/*.ts",
+    "lint": "eslint --fix src/**/*.ts",
     "package": "ncc build --source-map --license licenses.txt",
-    "prepublishOnly": "npm run build",
-    "test": "jest",
-    "all": "npm run build && npm run format && npm run lint && npm run package && npm test"
+    "test": "jest src",
+    "test:watch": "jest --watch src",
+    "all": "npm run test && npm run format && npm run lint && npm run build && npm run package && npm run all:example",
+    "all:example": "npm -w example run all"
   },
   "repository": {
     "type": "git",
@@ -34,25 +34,30 @@
     "@actions/exec": "^1.1.1",
     "@actions/github": "^5.0.0",
     "@octokit/rest": "^18.12.0",
-    "openapi-typescript": "^5.2.0"
+    "openapi-typescript": "^5.2.0",
+    "packageurl-js": "0.0.6"
   },
   "devDependencies": {
+    "@types/jest": "^27.5.1",
     "@types/js-yaml": "^4.0.5",
     "@types/node": "^16.10.5",
     "@typescript-eslint/eslint-plugin": "^5.16.0",
     "@typescript-eslint/parser": "^5.16.0",
     "@vercel/ncc": "^0.31.1",
-    "eslint": "^7.32.0",
-    "eslint-config-standard": "^16.0.3",
+    "eslint": "^8.0.0",
+    "eslint-config-standard": "^17.0.0",
     "eslint-plugin-github": "^4.3.6",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-jest": "^25.3.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-promise": "^5.2.0",
+    "eslint-plugin-promise": "^6.0.0",
     "jest": "^27.2.5",
     "prettier": "2.5.1",
     "ts-jest": "^27.1.2",
     "typescript": "^4.4.4"
-  }
+  },
+  "workspaces": [
+    "example"
+  ]
 }
