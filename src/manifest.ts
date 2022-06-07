@@ -155,7 +155,7 @@ export class Manifest {
   /**
    * indirectDependencies returns list of packages that are specified as indirect dependencies
    */
-  indirectDependencies() {
+  indirectDependencies(): Array<Package> {
     return this.filterDependencies((dep) => dep.relationship === 'indirect')
   }
 }

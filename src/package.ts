@@ -3,6 +3,7 @@ import { PackageURL } from 'packageurl-js'
 /**
  * Package is module that can be depended upon in manifest or build target. A
  * package is what you would download from a registry like NPM.
+ * We consider all packages that are defined in the [Package URL spec](https://github.com/package-url/purl-spec/blob/1eae1e95d81fddf8ae7f06b4dfc7b5b5be0cc3e2/PURL-TYPES.rst) as being valid package types.
  */
 export class Package {
   /**
