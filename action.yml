@@ -1,6 +1,10 @@
 name: 'Example Dependency Submission Action'
 description: 'Example action using the dependency-submission-toolkit and npm'
 inputs:
+  token:
+    description: "GitHub Personal Access Token (PAT). Defaults to PAT provided by Action runner"
+    required: false
+    default: ${{ github.token }}
   npm-package-directory:
     description: 'NPM package directory (directory with package.json)'
     required: true

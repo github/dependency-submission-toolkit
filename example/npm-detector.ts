@@ -117,7 +117,11 @@ export async function main() {
   }
   const npmPackage = JSON.parse(prodPackages.stdout) as NpmPackage
   const buildTarget = createBuildTarget(npmPackage)
-  const snapshot = new Snapshot()
+  const snapshot = new Snapshot({
+    name: 'example NPM detector',
+    url: 'https://github.com/github/dependency-submission-toolkit/tree/main/example',
+    version: '0.0.1'
+  })
   snapshot.addManifest(buildTarget)
   submitSnapshot(snapshot)
 }

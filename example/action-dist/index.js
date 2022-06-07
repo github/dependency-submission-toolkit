@@ -9982,7 +9982,11 @@ function main() {
         }
         const npmPackage = JSON.parse(prodPackages.stdout);
         const buildTarget = createBuildTarget(npmPackage);
-        const snapshot = new dependency_submission_toolkit_1.Snapshot();
+        const snapshot = new dependency_submission_toolkit_1.Snapshot({
+            name: 'example NPM detector',
+            url: 'https://github.com/github/dependency-submission-toolkit/tree/main/example',
+            version: '0.0.1'
+        });
         snapshot.addManifest(buildTarget);
         (0, dependency_submission_toolkit_1.submitSnapshot)(snapshot);
     });
@@ -10309,6 +10313,7 @@ const packageurl_js_1 = __nccwpck_require__(9727);
 /**
  * Package is module that can be depended upon in manifest or build target. A
  * package is what you would download from a registry like NPM.
+ * We consider all packages that are defined in the [Package URL spec](https://github.com/package-url/purl-spec/blob/1eae1e95d81fddf8ae7f06b4dfc7b5b5be0cc3e2/PURL-TYPES.rst) as being valid package types.
  */
 class Package {
     /**
@@ -10445,14 +10450,14 @@ class Snapshot {
     /**
      * All construor parameters of a Snapshot are optional, but can be specified for specific overrides
      *
+     * @param {Detector} detector
      * @param {Context} context
      * @param {Job} job
-     * @param {Detector} detector
      * @param {Metadata} metadata
      * @param {Date} date
      * @param {number} version
      */
-    constructor(context = github.context, job, detector, metadata, date = new Date(), version = 0) {
+    constructor(detector, context = github.context, job, metadata, date = new Date(), version = 0) {
         this.detector = detector;
         this.metadata = metadata;
         this.version = version;
@@ -10492,7 +10497,7 @@ function submitSnapshot(snapshot, context = github.context) {
         core.notice('Submitting snapshot...');
         core.notice(snapshot.prettyJSON());
         const repo = context.repo;
-        const githubToken = core.getInput('token');
+        const githubToken = core.getInput('token') || core.getIDToken;
         const octokit = new rest_1.Octokit({
             auth: githubToken
         });

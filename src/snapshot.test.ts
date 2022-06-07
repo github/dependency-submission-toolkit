@@ -31,13 +31,13 @@ context.ref = 'foo/bar/baz'
 describe('Snapshot', () => {
   it('renders expected JSON', () => {
     const snapshot = new Snapshot(
-      context,
-      { id: 42, correlator: 'test' },
       {
         name: 'test detector',
         url: 'https://github.com/github/dependency-submission-toolkit',
         version: '0.0.1'
       },
+      context,
+      { id: 42, correlator: 'test' },
       new Metadata().set('hello', 'snapshot'),
       new Date('2022-06-04T05:07:06.457Z')
     )
