@@ -1,6 +1,5 @@
 import { Manifest } from './manifest'
 import { PackageCache } from './package-cache'
-import { Metadata } from './metadata'
 
 const cache = new PackageCache()
 cache
@@ -13,11 +12,7 @@ function roundTripJSON(obj: any): object {
 
 describe('Manifest', () => {
   it('renders expected JSON', () => {
-    const manifest = new Manifest(
-      'test',
-      './some/test',
-      new Metadata().set('hello', 'world')
-    )
+    const manifest = new Manifest('test', './some/test')
     manifest.addDirectDependency(
       cache.package('pkg:npm/%40github/dependency-submission-toolkit@0.1.2')
     )
@@ -27,9 +22,6 @@ describe('Manifest', () => {
     expect(roundTripJSON(manifest)).toEqual({
       file: {
         source_location: './some/test'
-      },
-      metadata: {
-        hello: 'world'
       },
       name: 'test',
       resolved: {

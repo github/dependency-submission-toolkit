@@ -10002,14 +10002,12 @@ exports.main = main;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.submitSnapshot = exports.Snapshot = exports.Package = exports.Metadata = exports.PackageCache = exports.Manifest = exports.BuildTarget = void 0;
+exports.submitSnapshot = exports.Snapshot = exports.Package = exports.PackageCache = exports.Manifest = exports.BuildTarget = void 0;
 const package_cache_1 = __nccwpck_require__(833);
 Object.defineProperty(exports, "PackageCache", ({ enumerable: true, get: function () { return package_cache_1.PackageCache; } }));
 const manifest_1 = __nccwpck_require__(4786);
 Object.defineProperty(exports, "Manifest", ({ enumerable: true, get: function () { return manifest_1.Manifest; } }));
 Object.defineProperty(exports, "BuildTarget", ({ enumerable: true, get: function () { return manifest_1.BuildTarget; } }));
-const metadata_1 = __nccwpck_require__(5439);
-Object.defineProperty(exports, "Metadata", ({ enumerable: true, get: function () { return metadata_1.Metadata; } }));
 const package_1 = __nccwpck_require__(4715);
 Object.defineProperty(exports, "Package", ({ enumerable: true, get: function () { return package_1.Package; } }));
 const snapshot_1 = __nccwpck_require__(7794);
@@ -10062,13 +10060,12 @@ class Dependency {
  * Manifest defines the dependencies and the relationships of those dependencies.
  */
 class Manifest {
-    constructor(name, filePath, metadata) {
+    constructor(name, filePath) {
         this.resolved = {};
         this.name = name;
         if (filePath) {
             this.file = { source_location: filePath };
         }
-        this.metadata = metadata;
     }
     /**
      * addIndirectDependency adds a package as an indirect dependency to the
@@ -10160,50 +10157,6 @@ class BuildTarget extends Manifest {
     }
 }
 exports.BuildTarget = BuildTarget;
-
-
-/***/ }),
-
-/***/ 5439:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Metadata = exports.MAX_METADATA_SIZE = void 0;
-exports.MAX_METADATA_SIZE = 8;
-/**
- * Metadata provides a means of associating additional metadata with a
- * Dependency, Manifest, or Snapshot. Metadata are simple key-value pairs.
- *
- * @extends {Map<string, Scalar>}
- */
-class Metadata extends Map {
-    /**
-     * Set a metadata key-value pair. Note that a maximum of 8 metadata key-value
-     * pairs may be set.
-     *
-     * @param {string} key
-     * @param {Scalar} value
-     * @returns {this}
-     */
-    set(key, value) {
-        if (this.size === exports.MAX_METADATA_SIZE) {
-            throw new Error(`Maximum size of Metadata exceeded. Only ${exports.MAX_METADATA_SIZE} key-value pairs may be specified`);
-        }
-        super.set(key, value);
-        return this;
-    }
-    /**
-     * Metadata has a custom toJSON serializer
-     *
-     * @returns {object}
-     */
-    toJSON() {
-        return Object.fromEntries(this.entries());
-    }
-}
-exports.Metadata = Metadata;
 
 
 /***/ }),
@@ -10453,13 +10406,11 @@ class Snapshot {
      * @param {Detector} detector
      * @param {Context} context
      * @param {Job} job
-     * @param {Metadata} metadata
      * @param {Date} date
      * @param {number} version
      */
-    constructor(detector, context = github.context, job, metadata, date = new Date(), version = 0) {
+    constructor(detector, context = github.context, job, date = new Date(), version = 0) {
         this.detector = detector;
-        this.metadata = metadata;
         this.version = version;
         this.job = job || jobFromContext(context);
         this.sha = context.sha;

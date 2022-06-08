@@ -2,9 +2,11 @@
 
 `@github/dependency-submission-toolkit` is a TypeScript library for
 creating dependency snapshots and submitting them to the dependency
-submission API. Snapshots are a set of dependencies grouped by manifest
-with some related metadata. A manifest can be a physical file or a more abstract representation of a dependency grouping (such as a docker image id). After submission to the API, the included
-dependencies appear in the repository's [dependency
+submission API. Snapshots are a set of dependencies grouped by manifest with
+some related metadata. A manifest can be a physical file or a more abstract
+representation of a dependency grouping (such the processing of program
+outputs). After submission to the API, the included dependencies appear in the
+repository's [dependency
 graph](https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/about-the-dependency-graph).
 
 ## Usage
