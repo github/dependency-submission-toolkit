@@ -37,6 +37,3 @@ ownership:
     dependencies:
       - dependency-snapshots-api
       - dependency-graph-api
-      - vitess
-      - moda
-      - git-systems/spokes
