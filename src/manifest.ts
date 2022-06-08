@@ -1,7 +1,5 @@
 import { Package } from './package'
 
-import { Metadata } from './metadata'
-
 /**
  * FileInfo specifies where the manifest or build-target are specified in the repository.
  */
@@ -82,15 +80,13 @@ export class Manifest {
   resolved: Record<string, Dependency>
   name: string
   file?: FileInfo
-  metadata?: Metadata
 
-  constructor(name: string, filePath?: string, metadata?: Metadata) {
+  constructor(name: string, filePath?: string) {
     this.resolved = {}
     this.name = name
     if (filePath) {
       this.file = { source_location: filePath }
     }
-    this.metadata = metadata
   }
 
   /**

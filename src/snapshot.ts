@@ -5,7 +5,6 @@ import { Octokit } from '@octokit/rest'
 import { RequestError } from '@octokit/request-error'
 
 import { Manifest } from './manifest'
-import { Metadata } from './metadata'
 
 /*
 Core functionality for creating a snapshot of a project's dependencies.
@@ -85,10 +84,6 @@ export class Snapshot {
    * @type {Detector}
    */
   detector: Detector
-  /**
-   * @type {Metadata}
-   */
-  metadata?: Metadata
 
   /**
    * All construor parameters of a Snapshot are optional, but can be specified for specific overrides
@@ -96,7 +91,6 @@ export class Snapshot {
    * @param {Detector} detector
    * @param {Context} context
    * @param {Job} job
-   * @param {Metadata} metadata
    * @param {Date} date
    * @param {number} version
    */
@@ -104,12 +98,10 @@ export class Snapshot {
     detector: Detector,
     context: Context = github.context,
     job?: Job,
-    metadata?: Metadata,
     date: Date = new Date(),
     version: number = 0
   ) {
     this.detector = detector
-    this.metadata = metadata
     this.version = version
     this.job = job || jobFromContext(context)
     this.sha = context.sha
