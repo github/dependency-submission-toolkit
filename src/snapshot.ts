@@ -1,8 +1,7 @@
-/* eslint-disable camelcase */
-import { Context } from '@actions/github/lib/context'
-import * as core from '@actions/core'
-import * as github from '@actions/github'
-import { Octokit } from '@octokit/rest'
+import {Context} from '@actions/github/lib/context'
+import {setOutput, notice, getInput, warning} from '@actions/core'
+import {context as github_context} from '@actions/github'
+import {Octokit} from '@octokit/rest'
 
 /*
 Core functionality for creating a snapshot of a project's dependencies.
@@ -44,18 +43,10 @@ export class Dependency {
   }
 
   private setRelationship(relationship: string): DependencyRelationship {
-    if (
-      DependencyRelationship[
-        relationship as keyof typeof DependencyRelationship
-      ] !== undefined
-    ) {
-      return DependencyRelationship[
-        relationship as keyof typeof DependencyRelationship
-      ]
+    if (DependencyRelationship[relationship as keyof typeof DependencyRelationship] !== undefined) {
+      return DependencyRelationship[relationship as keyof typeof DependencyRelationship]
     } else {
-      throw new Error(
-        `Invalid dependency relationship: ${relationship}. Only 'direct' and 'indirect' are supported.`
-      )
+      throw new Error(`Invalid dependency relationship: ${relationship}. Only 'direct' and 'indirect' are supported.`)
     }
   }
 
@@ -63,9 +54,7 @@ export class Dependency {
     if (DependencyScope[scope as keyof typeof DependencyScope] !== undefined) {
       return DependencyScope[scope as keyof typeof DependencyScope]
     } else {
-      throw new Error(
-        `Invalid dependency scope: ${scope}. Only 'runtime' and 'development' are supported.`
-      )
+      throw new Error(`Invalid dependency scope: ${scope}. Only 'runtime' and 'development' are supported.`)
     }
   }
 
@@ -77,10 +66,7 @@ export class Dependency {
     if (matchFound && matchFound.index != null) {
       return package_url.split(matchFound[0])[1]
     } else {
-      throw new Error(
-        'Dependency name and version could not be processed from package url: ' +
-          package_url
-      )
+      throw new Error(`Dependency name and version could not be processed from package url: ${package_url}`)
     }
   }
 
@@ -113,10 +99,7 @@ export type Metadata = {
 }
 
 export function metadataValidSize(metadata: Metadata): boolean {
-  if (
-    Object.keys(metadata).length >= 1 &&
-    Object.keys(metadata).length <= MaxMetaDataKeys
-  ) {
+  if (Object.keys(metadata).length >= 1 && Object.keys(metadata).length <= MaxMetaDataKeys) {
     return true
   }
   return false
@@ -137,11 +120,7 @@ export class Manifest {
       if (metadataValidSize(metadata)) {
         this.metadata = metadata
       } else {
-        throw new Error(
-          'Manifest metadata must contain no more than ' +
-            MaxMetaDataKeys +
-            ' keys'
-        )
+        throw new Error(`Manifest metadata must contain no more than ${MaxMetaDataKeys} keys`)
       }
     }
   }
@@ -182,20 +161,12 @@ export class Snapshot {
   public metadata?: Metadata
   public manifests?: Manifests
 
-  constructor(
-    context: Context,
-    options: { metadata?: Metadata; detector?: Detector } = {},
-    version: 0 = 0
-  ) {
+  constructor(context: Context, options: {metadata?: Metadata; detector?: Detector} = {}, version: 0 = 0) {
     if (options.metadata !== undefined) {
       if (metadataValidSize(options.metadata)) {
         this.metadata = options.metadata
       } else {
-        throw new Error(
-          'Manifest metadata must contain no more than ' +
-            MaxMetaDataKeys +
-            ' keys'
-        )
+        throw new Error(`Manifest metadata must contain no more than ${MaxMetaDataKeys} keys`)
       }
     }
     if (options.detector !== undefined) {
@@ -227,36 +198,31 @@ export class Snapshot {
   }
 
   async submit() {
-    core.setOutput('snapshot', JSON.stringify(this, undefined, 2))
-    core.notice('Submitting snapshot...')
-    core.notice(JSON.stringify(this, undefined, 2))
+    setOutput('snapshot', JSON.stringify(this, undefined, 2))
+    notice('Submitting snapshot...')
+    notice(JSON.stringify(this, undefined, 2))
 
-    const context = github.context
+    const context = github_context
     const repo = context.repo
-    const githubToken = core.getInput('token')
+    const githubToken = getInput('token')
     const octokit = new Octokit({
       auth: githubToken
     })
 
     try {
-      const response = await octokit.request(
-        'POST /repos/{owner}/{repo}/dependency-graph/snapshots',
-        {
-          headers: {
-            accept: 'application/vnd.github.foo-bar-preview+json'
-          },
-          owner: repo.owner,
-          repo: repo.repo,
-          data: JSON.stringify(this, undefined, 2)
-        }
-      )
-      core.notice(
-        'Snapshot sucessfully created at ' + response.data.created_at.toString()
-      )
+      const response = await octokit.request('POST /repos/{owner}/{repo}/dependency-graph/snapshots', {
+        headers: {
+          accept: 'application/vnd.github.foo-bar-preview+json'
+        },
+        owner: repo.owner,
+        repo: repo.repo,
+        data: JSON.stringify(this, undefined, 2)
+      })
+      notice(`Snapshot sucessfully created at ${response.data.created_at.toString()}`)
     } catch (error) {
       if (error instanceof Error) {
-        core.warning(error.message)
-        if (error.stack) core.warning(error.stack)
+        warning(error.message)
+        if (error.stack) warning(error.stack)
       }
       throw new Error(`Failed to submit snapshot: ${error}`)
     }

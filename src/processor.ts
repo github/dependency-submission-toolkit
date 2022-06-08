@@ -4,9 +4,9 @@
  * Constructs for processing manifest entries into Entry objects that can be used to populate a Snapshot with Dependency objects.
  */
 
-import * as core from '@actions/core'
+import {warning} from '@actions/core'
 import * as exec from '@actions/exec'
-import * as fs from 'fs'
+import {readFile} from 'fs'
 
 export class Entry {
   public name: string
@@ -16,12 +16,7 @@ export class Entry {
   public scope?: string
   public dependencies?: Entry[]
 
-  public constructor(
-    package_url: string,
-    relationship?: string,
-    scope?: string,
-    dependencies?: Entry[]
-  ) {
+  public constructor(package_url: string, relationship?: string, scope?: string, dependencies?: Entry[]) {
     const parsedEntryText = this.parseData(package_url)
     this.package_url = package_url
     this.name = parsedEntryText[0]
@@ -44,9 +39,7 @@ export class Entry {
     if (matchFound && matchFound.index != null) {
       return [entryText.slice(0, matchFound.index - 1), matchFound[0]]
     } else {
-      throw new Error(
-        'Dependency entry name and version could not be processed: ' + entryText
-      )
+      throw new Error(`Dependency entry name and version could not be processed: ${entryText}`)
     }
   }
 
@@ -90,7 +83,7 @@ async function execCmd(command: string, cwd: string): Promise<string> {
     }
   }
 
-  return exec.exec(command, undefined, options).then((_) => {
+  return exec.exec(command, undefined, options).then(_ => {
     if (std_err) {
       console.log(std_err)
     }
@@ -104,7 +97,7 @@ async function runCommand(command: string | ManifestCommand): Promise<string[]> 
   if (typeof command === 'string') {
     return [await execCmd(command, process.cwd())]
   } else {
-    return command.workingDirs.map((dir) => {
+    return command.workingDirs.map(dir => {
       await execCmd(command.command, dir)
     })
   }
@@ -112,16 +105,16 @@ async function runCommand(command: string | ManifestCommand): Promise<string[]> 
 
 export async function readDependencies(
   dependenciesProcessorFunc: ProcessDependenciesContent,
-  manifestInfo: { path?: string; command?: string | ManifestCommand } = {}
+  manifestInfo: {path?: string; command?: string | ManifestCommand} = {}
 ): Promise<ParsedDependencies | undefined> {
   try {
     if (manifestInfo.path !== undefined) {
       return new Promise<string>((resolve, reject) => {
-        fs.readFile(manifestInfo.path!, {}, (err, data) => {
+        readFile(manifestInfo.path!, {}, (err, data) => {
           if (err) reject(err)
           resolve(data.toString())
         })
-      }).then((contents) => {
+      }).then(contents => {
         return dependenciesProcessorFunc(contents)
       })
     }
@@ -131,8 +124,8 @@ export async function readDependencies(
     }
   } catch (error) {
     if (error instanceof Error) {
-      core.warning(error.message)
-      if (error.stack) core.warning(error.stack)
+      warning(error.message)
+      if (error.stack) warning(error.stack)
     }
     throw new Error('Could not parse project dependencies.')
   }

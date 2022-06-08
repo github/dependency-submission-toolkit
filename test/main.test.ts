@@ -1,6 +1,6 @@
-import { describe, expect, test } from '@jest/globals'
+import {describe, expect, test} from '@jest/globals'
 
-import { Manifest, MaxMetaDataKeys } from '../src/snapshot'
+import {Manifest, MaxMetaDataKeys} from '../src/snapshot'
 
 describe('Validates manifest file initialization', () => {
   test('can create a manifest file with a name', async () => {
@@ -56,12 +56,6 @@ describe('Validates manifest file initialization', () => {
           },
           metadata
         )
-    ).toThrow(
-      Error(
-        'Manifest metadata must contain no more than ' +
-          MaxMetaDataKeys +
-          ' keys'
-      )
-    )
+    ).toThrow(Error(`Manifest metadata must contain no more than ${MaxMetaDataKeys} keys`))
   })
 })

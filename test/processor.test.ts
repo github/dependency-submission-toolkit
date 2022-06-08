@@ -1,18 +1,18 @@
-import { describe, expect, test } from '@jest/globals'
-import { readDependencies, ParsedDependencies, Entry } from '../src/processor'
+import {describe, expect, test} from '@jest/globals'
+import {readDependencies, ParsedDependencies, Entry} from '../src/processor'
 
 describe('readDependencies', () => {
   test('test readDependencies with path supplied', async () => {
     const result = await readDependencies(
-      (contents) => {
+      contents => {
         const dependencies: ParsedDependencies = {}
-        contents.split('\n').forEach((dep) => {
+        for (const dep of contents.split('\n')) {
           if (dep.length < 1) {
-            return
+            return dependencies
           }
           const purl = `pkg://${dep}@1`
           dependencies[purl] = new Entry(purl)
-        })
+        }
         return dependencies
       },
       {
@@ -26,15 +26,15 @@ describe('readDependencies', () => {
 
   test('test readDependencies with command supplied', async () => {
     const result = await readDependencies(
-      (contents) => {
+      contents => {
         const dependencies: ParsedDependencies = {}
-        contents.split('\n').forEach((dep) => {
+        for (const dep of contents.split('\n')) {
           if (dep.length < 1) {
-            return
+            return dependencies
           }
           const purl = `pkg://${dep}@1`
           dependencies[purl] = new Entry(purl)
-        })
+        }
         return dependencies
       },
       {
