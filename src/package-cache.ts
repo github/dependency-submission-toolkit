@@ -37,6 +37,22 @@ export class PackageCache {
   }
 
   /**
+   * Provided a "matcher" object with any of the string fields 'namespace',
+   * 'name', or 'version', returns all packages matching fields specified by
+   * the matcher stored by the PackageCache
+   *
+   * @param {Object} matcher
+   * @returns {boolean}
+   */
+  packagesMatching(matcher: {
+    namespace?: string
+    name?: string
+    version?: string
+  }): Array<Package> {
+    return Object.values(this.database).filter((pkg) => pkg.matching(matcher))
+  }
+
+  /**
    * addPackage adds a package, even if it already exists in the cache.
    *
    * @param {Package} pkg

@@ -11,8 +11,8 @@ Core functionality for creating a snapshot of a project's dependencies.
 */
 
 /**
- * When multiple snapshots are submit, Job provides the means for Snapshots to
- * be distinguished. Correlator and ID must be unique between different Snapshots
+ * When multiple snapshots are submitted, Job provides the means for Snapshots to
+ * be distinguished. Correlator must be unique between different Snapshots
  */
 export type Job = {
   correlator: string
