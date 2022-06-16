@@ -270,7 +270,8 @@ const packageurl_js_1 = __nccwpck_require2_(8915);
  * We consider all packages that are defined in the [Package URL spec](https://github.com/package-url/purl-spec/blob/1eae1e95d81fddf8ae7f06b4dfc7b5b5be0cc3e2/PURL-TYPES.rst) as being valid package types.
  */
 class Package {
-    /** A Package can be constructed with a PackageURL or a string conforming to
+    /**
+     * A Package can be constructed with a PackageURL or a string conforming to
      * the Package URL format (https://github.com/package-url/purl-spec)
      *
      * @param {PackageURL | string} pkg
@@ -352,9 +353,11 @@ class Package {
      * @returns {boolean}
      */
     matching(matcher) {
+        // prettier-ignore
         return ((matcher.namespace === undefined ||
             this.packageURL.namespace === matcher.namespace) &&
-            (matcher.name === undefined || this.packageURL.name === matcher.name) &&
+            (matcher.name === undefined ||
+                this.packageURL.name === matcher.name) &&
             (matcher.version === undefined ||
                 this.packageURL.version === matcher.version));
     }

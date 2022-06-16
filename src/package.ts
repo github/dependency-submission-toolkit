@@ -15,7 +15,8 @@ export class Package {
    */
   dependencies: Array<Package> // eslint-disable-line no-use-before-define
 
-  /** A Package can be constructed with a PackageURL or a string conforming to
+  /**
+   * A Package can be constructed with a PackageURL or a string conforming to
    * the Package URL format (https://github.com/package-url/purl-spec)
    *
    * @param {PackageURL | string} pkg
@@ -107,10 +108,12 @@ export class Package {
     name?: string
     version?: string
   }): boolean {
+    // prettier-ignore
     return (
       (matcher.namespace === undefined ||
         this.packageURL.namespace === matcher.namespace) &&
-      (matcher.name === undefined || this.packageURL.name === matcher.name) &&
+      (matcher.name === undefined  ||
+        this.packageURL.name === matcher.name) &&
       (matcher.version === undefined ||
         this.packageURL.version === matcher.version)
     )
