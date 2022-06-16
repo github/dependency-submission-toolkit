@@ -15,8 +15,7 @@ export class Package {
    */
   dependencies: Array<Package> // eslint-disable-line no-use-before-define
 
-  /**
-   * A Package can be constructed with a PackageURL or a string conforming to
+  /** A Package can be constructed with a PackageURL or a string conforming to
    * the Package URL format (https://github.com/package-url/purl-spec)
    *
    * @param {PackageURL | string} pkg
@@ -69,6 +68,15 @@ export class Package {
   }
 
   /**
+   * namespace of the package
+   *
+   * @returns {string}
+   */
+  namespace(): string | null {
+    return this.packageURL.namespace ?? null
+  }
+
+  /**
    * name of the package
    *
    * @returns {string}
@@ -84,5 +92,27 @@ export class Package {
    */
   version(): string {
     return this.packageURL.version || ''
+  }
+
+  /**
+   * Provided a "matcher" object with any of the string fields 'namespace',
+   * 'name', or 'version', returns true if the Package has values matching the
+   * matcher.
+   *
+   * @param {Object} matcher
+   * @returns {boolean}
+   */
+  matching(matcher: {
+    namespace?: string
+    name?: string
+    version?: string
+  }): boolean {
+    return (
+      (matcher.namespace === undefined ||
+        this.packageURL.namespace === matcher.namespace) &&
+      (matcher.name === undefined || this.packageURL.name === matcher.name) &&
+      (matcher.version === undefined ||
+        this.packageURL.version === matcher.version)
+    )
   }
 }

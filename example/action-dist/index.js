@@ -191,6 +191,17 @@ class PackageCache {
         return dep;
     }
     /**
+     * Provided a "matcher" object with any of the string fields 'namespace',
+     * 'name', or 'version', returns all packages matching fields specified by
+     * the matcher stored by the PackageCache
+     *
+     * @param {Object} matcher
+     * @returns {boolean}
+     */
+    packagesMatching(matcher) {
+        return Object.values(this.database).filter((pkg) => pkg.matching(matcher));
+    }
+    /**
      * addPackage adds a package, even if it already exists in the cache.
      *
      * @param {Package} pkg
@@ -259,8 +270,7 @@ const packageurl_js_1 = __nccwpck_require2_(8915);
  * We consider all packages that are defined in the [Package URL spec](https://github.com/package-url/purl-spec/blob/1eae1e95d81fddf8ae7f06b4dfc7b5b5be0cc3e2/PURL-TYPES.rst) as being valid package types.
  */
 class Package {
-    /**
-     * A Package can be constructed with a PackageURL or a string conforming to
+    /** A Package can be constructed with a PackageURL or a string conforming to
      * the Package URL format (https://github.com/package-url/purl-spec)
      *
      * @param {PackageURL | string} pkg
@@ -309,6 +319,15 @@ class Package {
         return this.packageURL.toString();
     }
     /**
+     * namespace of the package
+     *
+     * @returns {string}
+     */
+    namespace() {
+        var _a;
+        return (_a = this.packageURL.namespace) !== null && _a !== void 0 ? _a : null;
+    }
+    /**
      * name of the package
      *
      * @returns {string}
@@ -323,6 +342,21 @@ class Package {
      */
     version() {
         return this.packageURL.version || '';
+    }
+    /**
+     * Provided a "matcher" object with any of the string fields 'namespace',
+     * 'name', or 'version', returns true if the Package has values matching the
+     * matcher.
+     *
+     * @param {Object} matcher
+     * @returns {boolean}
+     */
+    matching(matcher) {
+        return ((matcher.namespace === undefined ||
+            this.packageURL.namespace === matcher.namespace) &&
+            (matcher.name === undefined || this.packageURL.name === matcher.name) &&
+            (matcher.version === undefined ||
+                this.packageURL.version === matcher.version));
     }
 }
 exports.Package = Package;
