@@ -39,7 +39,7 @@ describe('PackageCache', () => {
       // purposely using reference equality with 'toBe'
       expect(cache.package(purl)).toBe(dep)
     })
-    it('.packagesMatching returns package that match matcher', () => {
+    it('.packagesMatching returns packages that match matcher', () => {
       const cache = new PackageCache()
       cache.package(
         new PackageURL(
