@@ -53,7 +53,7 @@ type Manifests = Record<string, Manifest>
 type ISO8601Date = string
 
 /**
- * Snapshot is the top-level container for Dependency Submisison
+ * Snapshot is the top-level container for Dependency Submission
  */
 export class Snapshot {
   /**
@@ -86,7 +86,7 @@ export class Snapshot {
   detector: Detector
 
   /**
-   * All construor parameters of a Snapshot are optional, but can be specified for specific overrides
+   * All constructor parameters of a Snapshot are optional, but can be specified for specific overrides
    *
    * @param {Detector} detector
    * @param {Context} context
@@ -162,7 +162,7 @@ export async function submitSnapshot(
       }
     )
     core.notice(
-      'Snapshot sucessfully created at ' + response.data.created_at.toString()
+      'Snapshot successfully created at ' + response.data.created_at.toString()
     )
   } catch (error) {
     if (error instanceof RequestError) {

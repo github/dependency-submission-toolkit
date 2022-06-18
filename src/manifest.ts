@@ -57,7 +57,7 @@ class Dependency {
   }
 
   /**
-   * toJSON is a custom JSON-serializer. It will be called when JSON.stringfy()
+   * toJSON is a custom JSON-serializer. It will be called when JSON.stringify()
    * is called with this class or any object containing this class.
    *
    * @returns {object} with keys package_url, relationship, scope, and
@@ -91,14 +91,14 @@ export class Manifest {
 
   /**
    * addIndirectDependency adds a package as an indirect dependency to the
-   * manifest. Direct dependencies take precendence over indirect dependencies
+   * manifest. Direct dependencies take precedence over indirect dependencies
    * if a package is added as both.
    *
    * @param {Package} pkg
    * @param {DependencyScope} scope
    */
   addDirectDependency(pkg: Package, scope?: DependencyScope) {
-    // will overwrite any previous indirect assigments
+    // will overwrite any previous indirect assignments
     this.resolved[pkg.packageID()] = new Dependency(pkg, 'direct', scope)
   }
 
@@ -111,7 +111,7 @@ export class Manifest {
    * @param {DependencyScope} scope dependency scope of the package
    */
   addIndirectDependency(pkg: Package, scope?: DependencyScope) {
-    // nullish assigment to keep any previous assignments, including direct assigments
+    // nullish assignment to keep any previous assignments, including direct assignments
     this.resolved[pkg.packageID()] ??= new Dependency(pkg, 'indirect', scope)
   }
 

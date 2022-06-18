@@ -76,8 +76,8 @@ export function parseDependencies(
 
 /**
  * createBuildTarget creates a BuildTarget--a specialized sub-class of Manifest
- * intended to capture the dependencies of a speicific build-target, rather
- * than all packages provided by the manifest enviroment. It parses the output
+ * intended to capture the dependencies of a specific build-target, rather
+ * than all packages provided by the manifest environment. It parses the output
  * from 'npm list' and distinguishes between direct dependencies (those the
  * build-target explicity depends on) and indirect (transitive dependencies of
  * the direct dependencies). It identifies all dependency packages as
