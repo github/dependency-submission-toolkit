@@ -144,7 +144,7 @@ export async function submitSnapshot(
   core.notice(snapshot.prettyJSON())
 
   const repo = context.repo
-  const githubToken = core.getInput('token') || core.getIDToken
+  const githubToken = core.getInput('token') || (await core.getIDToken())
   const octokit = new Octokit({
     auth: githubToken
   })

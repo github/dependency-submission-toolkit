@@ -475,7 +475,7 @@ function submitSnapshot(snapshot, context = github.context) {
         core.notice('Submitting snapshot...');
         core.notice(snapshot.prettyJSON());
         const repo = context.repo;
-        const githubToken = core.getInput('token') || core.getIDToken;
+        const githubToken = core.getInput('token') || (yield core.getIDToken());
         const octokit = new rest_1.Octokit({
             auth: githubToken
         });
