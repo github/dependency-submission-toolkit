@@ -31,7 +31,7 @@ class Dependency {
         this.scope = scope;
     }
     /**
-     * toJSON is a custom JSON-serializer. It will be called when JSON.stringfy()
+     * toJSON is a custom JSON-serializer. It will be called when JSON.stringify()
      * is called with this class or any object containing this class.
      *
      * @returns {object} with keys package_url, relationship, scope, and
@@ -59,14 +59,14 @@ class Manifest {
     }
     /**
      * addIndirectDependency adds a package as an indirect dependency to the
-     * manifest. Direct dependencies take precendence over indirect dependencies
+     * manifest. Direct dependencies take precedence over indirect dependencies
      * if a package is added as both.
      *
      * @param {Package} pkg
      * @param {DependencyScope} scope
      */
     addDirectDependency(pkg, scope) {
-        // will overwrite any previous indirect assigments
+        // will overwrite any previous indirect assignments
         this.resolved[pkg.packageID()] = new Dependency(pkg, 'direct', scope);
     }
     /**
@@ -80,7 +80,7 @@ class Manifest {
     addIndirectDependency(pkg, scope) {
         var _a;
         var _b, _c;
-        // nullish assigment to keep any previous assignments, including direct assigments
+        // nullish assignment to keep any previous assignments, including direct assignments
         (_a = (_b = this.resolved)[_c = pkg.packageID()]) !== null && _a !== void 0 ? _a : (_b[_c] = new Dependency(pkg, 'indirect', scope));
     }
     hasDependency(pkg) {
@@ -172,7 +172,7 @@ class PackageCache {
     /**
      * 'cache.package()' will be the most commonly used method of PackageCache.
      * package(identifier) will create and add a new Package to the PackageCache if no
-     * Packaging with a matching identifer exists in PackageCache, or return an existing
+     * Packaging with a matching identifier exists in PackageCache, or return an existing
      * Package if a match is found. The mutation in this case is expected; do not
      * use package(identifier) to determine if a package is already added.
      * Instead, use hasPackage or lookupPackage.
@@ -424,11 +424,11 @@ function jobFromContext(context) {
 }
 exports.jobFromContext = jobFromContext;
 /**
- * Snapshot is the top-level container for Dependency Submisison
+ * Snapshot is the top-level container for Dependency Submission
  */
 class Snapshot {
     /**
-     * All construor parameters of a Snapshot are optional, but can be specified for specific overrides
+     * All constructor parameters of a Snapshot are optional, but can be specified for specific overrides
      *
      * @param {Detector} detector
      * @param {Context} context
@@ -488,7 +488,7 @@ function submitSnapshot(snapshot, context = github.context) {
                 repo: repo.repo,
                 data: JSON.stringify(snapshot)
             });
-            core.notice('Snapshot sucessfully created at ' + response.data.created_at.toString());
+            core.notice('Snapshot successfully created at ' + response.data.created_at.toString());
         }
         catch (error) {
             if (error instanceof request_error_1.RequestError) {
@@ -12433,8 +12433,8 @@ function parseDependencies(cache, dependencies) {
 exports.parseDependencies = parseDependencies;
 /**
  * createBuildTarget creates a BuildTarget--a specialized sub-class of Manifest
- * intended to capture the dependencies of a speicific build-target, rather
- * than all packages provided by the manifest enviroment. It parses the output
+ * intended to capture the dependencies of a specific build-target, rather
+ * than all packages provided by the manifest environment. It parses the output
  * from 'npm list' and distinguishes between direct dependencies (those the
  * build-target explicity depends on) and indirect (transitive dependencies of
  * the direct dependencies). It identifies all dependency packages as

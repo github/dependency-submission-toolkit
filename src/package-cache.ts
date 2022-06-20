@@ -16,7 +16,7 @@ export class PackageCache {
   /**
    * 'cache.package()' will be the most commonly used method of PackageCache.
    * package(identifier) will create and add a new Package to the PackageCache if no
-   * Packaging with a matching identifer exists in PackageCache, or return an existing
+   * Packaging with a matching identifier exists in PackageCache, or return an existing
    * Package if a match is found. The mutation in this case is expected; do not
    * use package(identifier) to determine if a package is already added.
    * Instead, use hasPackage or lookupPackage.
