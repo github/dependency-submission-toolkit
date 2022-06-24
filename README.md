@@ -22,6 +22,14 @@ Some useful commands to navigate using the library:
 - `npm run package` to compile the code into a single file using `ncc`
 - `npm run all` will do the above and additional commands (e.g. lint the code, test)
 
+
+Because we are checking in the Typescript output, you may see check failures if you don't generate the contents of `dist/` in a similar manner to our CI check. You can easily rectify this by regenerating in a codespace and using what we use in our workflow YAML:
+
+```
+npm ci
+npm rebuild && npm run all
+```
+
 ## Writing Your Own Dependency Submission Action
 
 You may use classes from `@github/dependency-submission-toolkit` to help
