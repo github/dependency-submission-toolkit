@@ -18,6 +18,3 @@ jobs:
         run: npm ci
       - name: Run all NPM build/test actions
         run: npm rebuild && npm run all
-      - name: Verify no uncommitted files
-        run: '[ -z "$(git status --porcelain=v1 2>/dev/null)" ]'
-        shell: bash
