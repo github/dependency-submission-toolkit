@@ -9,6 +9,12 @@ outputs). After submission to the API, the included dependencies appear in the
 repository's [dependency
 graph](https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/about-the-dependency-graph).
 
+## Installation
+
+```
+npm install @github/dependency-submission-tookit
+```
+
 ## Usage
 
 Some useful commands to navigate using the library:
@@ -58,10 +64,3 @@ also included in a workflow in this repository and run for each commit to the
 This library uses the `jest` testing framework with tests co-located with
 source files. To run the tests, you can use `npm test` to run tests.
 Otherwise you can use `jest` directly.
-
-## Installation
-
-The `dependency-submission-toolkit` library is hosted on GitHub's npm
-registry. Follow [the
-documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#installing-a-package)
-to install the package in your project.
