@@ -19,6 +19,6 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
-      - run: npm whoami; npm publish
+      - run: npm whoami; npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
