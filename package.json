@@ -8,11 +8,13 @@
   "directories": {
     "test": "test"
   },
+  "files": ["dist"],
   "scripts": {
     "build": "tsc",
     "format": "prettier --write '**/*.ts'",
     "lint": "eslint --fix src/**/*.ts",
     "package": "ncc build --source-map --license licenses.txt",
+    "prepack": "npm run build && npm run package",
     "test": "jest src",
     "test:watch": "jest --watch src",
     "all": "npm run build && npm run format && npm run lint && npm run test && npm run package && npm run all:example",
