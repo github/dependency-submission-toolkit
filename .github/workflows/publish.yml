@@ -3,6 +3,7 @@ name: Publish
 on:
   release:
     types: [created]
+  workflow_dispatch:
 
 jobs:
   publish-npm:
@@ -18,9 +19,6 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
-      - run: npm version ${TAG_NAME} --git-tag-version=false
-        env:
-          TAG_NAME: ${{ github.event.release.tag_name }}
       - run: npm whoami; npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
