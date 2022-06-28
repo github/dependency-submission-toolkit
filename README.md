@@ -12,7 +12,7 @@ graph](https://docs.github.com/en/code-security/supply-chain-security/understand
 ## Installation
 
 ```
-npm install @github/dependency-submission-tookit
+npm install @github/dependency-submission-toolkit
 ```
 
 ## Usage
