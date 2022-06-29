@@ -4,9 +4,9 @@
   "description": "Example using the Dependency Submission Toolkit and npm list",
   "main": "index.ts",
   "dependencies": {
-    "@github/dependency-submission-toolkit": "file:../"
+    "@github/dependency-submission-toolkit": "file:../",
+    "packageurl-js": "^0.0.6"
   },
-  "devDependencies": {},
   "scripts": {
     "build": "tsc",
     "test": "jest",
