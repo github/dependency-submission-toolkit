@@ -8,7 +8,10 @@ jobs:
       - name: 'Checkout Repository'
         uses: actions/checkout@v3
       - uses: actions/setup-node@v3
-      - run: npm ci
+      - name: Install NPM dependencies
+        run: npm ci
+      - name: Run all NPM build/test actions
+        run: npm -w:example rebuild && npm run all -w:example
       - name: Run dependency submission
         uses: ./
         id: example
