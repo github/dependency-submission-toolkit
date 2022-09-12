@@ -1,6 +1,10 @@
 name: Example Dependency Submission
 on:
   push
+
+permissions:
+  contents: write
+
 jobs:
   example-submission:
     runs-on: ubuntu-latest
