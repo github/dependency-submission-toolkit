@@ -32,7 +32,7 @@ describe('Snapshot', () => {
         version: '0.0.1'
       },
       context,
-      { id: 42, correlator: 'test' },
+      { id: '42', correlator: 'test' },
       new Date('2022-06-04T05:07:06.457Z')
     )
     snapshot.addManifest(manifest)
@@ -44,7 +44,7 @@ describe('Snapshot', () => {
       },
       version: 0,
       job: {
-        id: 42,
+        id: '42',
         correlator: 'test'
       },
       ref: 'foo/bar/baz',

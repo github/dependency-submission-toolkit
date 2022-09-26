@@ -16,7 +16,7 @@ Core functionality for creating a snapshot of a project's dependencies.
  */
 export type Job = {
   correlator: string
-  id: string | number
+  id: string
   html_url?: string // eslint-disable-line camelcase
 }
 
