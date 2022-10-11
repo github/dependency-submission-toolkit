@@ -6,7 +6,7 @@ ownership:
   #
   # Additional documentation on ownership.yaml fields is available at: https://github.com/github/durable-ownership
   # Questions? Ask in #sre
-  - team: github/dsp-dependency-graph
+  - team: github/dependency-graph
     repo: https://github.com/github/dependency-submission-toolkit
     name: dependency-submission-toolkit
     kind: moda
