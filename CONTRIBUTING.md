@@ -60,20 +60,6 @@ Here are a few things you can do that will increase the likelihood of your pull 
    include a small description of the biggest changes in the new version.
 6. Click "Publish Release".
 
-You now have a tag and release using the semver version you used
-above. The last remaining thing to do is to move the dynamic version
-identifier to match the current SHA. This allows users to adopt a
-major version number (e.g. `v1`) in their workflows while
-automatically getting all the
-minor/patch updates.
-
-To do this just checkout `main`, force-create a new annotated tag, and push it:
-
-```
-git tag -fa v2 -m "Updating v2 to 2.3.4"
-git push origin v2 --force
-```
-
 ## Resources
 
 - [How to Contribute to Open Source](https://opensource.guide/how-to-contribute/)
