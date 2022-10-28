@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/github/dependency-submission-toolkit#readme",
   "dependencies": {
-    "@actions/core": "^1.6.0",
+    "@actions/core": "^1.10.0",
     "@actions/exec": "^1.1.1",
     "@actions/github": "^5.0.0",
     "@octokit/rest": "^18.12.0",
