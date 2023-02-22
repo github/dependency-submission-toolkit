@@ -12,7 +12,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "package": "ncc build --source-map --license licenses.txt --out action-dist",
-    "all": "npm run test && npm run build && npm run package"
+    "all": "npm install && npm run test && npm run build && npm run package"
   },
   "repository": {
     "type": "git",
