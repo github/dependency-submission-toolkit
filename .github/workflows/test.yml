@@ -17,5 +17,6 @@ jobs:
       - run: npm version
       - name: Install NPM dependencies
         run: npm ci
+      - run: npm install
       - name: Run all NPM build/test actions
         run: npm rebuild && npm run all
