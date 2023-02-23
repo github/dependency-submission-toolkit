@@ -156,7 +156,7 @@ export async function submitSnapshot(
         },
         owner: repo.owner,
         repo: repo.repo,
-        data: JSON.stringify(snapshot)
+        ...snapshot
       }
     )
     core.notice(
