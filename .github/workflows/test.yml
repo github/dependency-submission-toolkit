@@ -14,7 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      # As of 2023-02-22, the ubuntu-latest image uses npm v8.3.1. This version
+      # has a bug that prevents loading dependency-submission-toolkit in the
+      # 'example/' project. npm v8.4.1 (same version in Codespace created on
+      # same date) is known to work. Not pinned to latest to avoid
+      # reproducibility issues.
+      - run: npm install npm@8.4.1 -g
       - name: Install NPM dependencies
         run: npm ci
+      - run: npm install
       - name: Run all NPM build/test actions
         run: npm rebuild && npm run all

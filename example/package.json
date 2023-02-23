@@ -1,7 +1,7 @@
 {
-  "name": "npm-dependency-submission-example",
+  "name": "@github/npm-dependency-submission-example",
   "version": "1.0.0",
-  "description": "Example using the Dependency Submission Toolkit and npm list",
+  "description": "[UNPUBLISHED PACKAGE!] Example using the Dependency Submission Toolkit and npm list",
   "main": "index.ts",
   "dependencies": {
     "@github/dependency-submission-toolkit": "file:../",
