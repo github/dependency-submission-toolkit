@@ -38,6 +38,7 @@
     "@actions/exec": "^1.1.1",
     "@actions/github": "^5.0.0",
     "@octokit/rest": "^18.12.0",
+    "@octokit/webhooks-types": "^6.10.0",
     "openapi-typescript": "^5.2.0",
     "packageurl-js": "0.0.6"
   },

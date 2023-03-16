@@ -3,6 +3,7 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { Octokit } from '@octokit/rest'
 import { RequestError } from '@octokit/request-error'
+import { PullRequestEvent } from '@octokit/webhooks-types'
 
 import { Manifest } from './manifest'
 
@@ -30,6 +31,34 @@ export function jobFromContext(context: Context): Job {
   return {
     correlator: context.job,
     id: context.runId.toString()
+  }
+}
+
+/**
+ * shaFromContext returns the sha of the commit that triggered the action, or the head sha of the PR.
+ *
+ * See https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request for more details
+ * about why this function is necessary, but the short reason is that GITHUB_SHA is _not_ necessarily the head sha
+ * of the PR when the event is pull_request (or some other related event types).
+ *
+ * @param {Context} context
+ * @returns {string}
+ */
+export function shaFromContext(context: Context): string {
+  const pullRequestEvents = [
+    'pull_request',
+    'pull_request_comment',
+    'pull_request_review',
+    'pull_request_review_comment'
+    // Note that pull_request_target is omitted here.
+    // That event runs in the context of the base commit of the PR,
+    // so the snapshot should not be associated with the head commit.
+  ]
+  if (pullRequestEvents.includes(context.eventName)) {
+    const pr = (context.payload as PullRequestEvent).pull_request
+    return pr.head.sha
+  } else {
+    return context.sha
   }
 }
 
@@ -104,7 +133,7 @@ export class Snapshot {
     this.detector = detector
     this.version = version
     this.job = job || jobFromContext(context)
-    this.sha = context.sha
+    this.sha = shaFromContext(context)
     this.ref = context.ref
     this.scanned = date.toISOString()
     this.manifests = {}
