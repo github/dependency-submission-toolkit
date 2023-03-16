@@ -22,6 +22,7 @@ manifest.addIndirectDependency(cache.package('pkg:npm/%40actions/core@1.6.0'))
 // add bogus git data to the context
 context.sha = '1000000000000000000000000000000000000000'
 context.ref = 'foo/bar/baz'
+context.eventName = 'push'
 
 describe('Snapshot', () => {
   it('renders expected JSON', () => {
