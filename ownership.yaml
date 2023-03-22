@@ -16,7 +16,6 @@ ownership:
     exec_sponsor: jacobdepriest
     product_manager: courtneycl
     team_slack: dependency-graph
-    ops_slack: dg-alerts
     qos: experimental
     tier: 3
     sev1:
