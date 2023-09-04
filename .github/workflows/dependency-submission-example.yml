@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout Repository'
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - uses: actions/setup-node@v3
       # As of 2023-02-22, the ubuntu-latest image uses npm v8.3.1. This version
       # has a bug that prevents loading dependency-submission-toolkit in the
