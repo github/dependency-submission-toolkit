@@ -1,11 +1,6 @@
 ---
 version: 1
 ownership:
-  # ownership.yaml describes who is responsible for a service, and how to contact them. If your service is made up
-  # of multiple components, you can define multiple entries in this file.
-  #
-  # Additional documentation on ownership.yaml fields is available at: https://github.com/github/durable-ownership
-  # Questions? Ask in #sre
   - team: github/dependency-graph
     repo: https://github.com/github/dependency-submission-toolkit
     name: dependency-submission-toolkit
@@ -18,6 +13,9 @@ ownership:
     team_slack: dependency-graph
     qos: experimental
     tier: 3
-    dependencies:
-      - dependency-snapshots-api
-      - dependency-graph-api
+    sev1:
+      issue: https://github.com/github/dependency-submission-toolkit/issues
+    sev2:
+      issue: https://github.com/github/dependency-submission-toolkit/issues
+    sev3:
+      issue: https://github.com/github/dependency-submission-toolkit/issues
