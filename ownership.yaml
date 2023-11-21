@@ -4,7 +4,7 @@ ownership:
   - team: github/dependency-graph
     repo: https://github.com/github/dependency-submission-toolkit
     name: dependency-submission-toolkit
-    kind: artifact
+    kind: moda
     long_name: dependency-submission-toolkit
     description: 'A TypeScript library for creating dependency snapshots and submitting them to the dependency submission API.'
     maintainer: aaroncathcart
@@ -14,8 +14,11 @@ ownership:
     qos: experimental
     tier: 3
     sev1:
+      tta: 30d
       issue: https://github.com/github/dependency-submission-toolkit/issues
     sev2:
+      tta: 30d
       issue: https://github.com/github/dependency-submission-toolkit/issues
     sev3:
+      tta: 30d
       issue: https://github.com/github/dependency-submission-toolkit/issues
