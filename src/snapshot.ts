@@ -1,7 +1,6 @@
 import { Context } from '@actions/github/lib/context'
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { Octokit } from '@octokit/rest'
 import { RequestError } from '@octokit/request-error'
 import { PullRequestEvent } from '@octokit/webhooks-types'
 
@@ -188,9 +187,17 @@ export async function submitSnapshot(
         ...snapshot
       }
     )
-    core.notice(
-      'Snapshot successfully created at ' + response.data.created_at.toString()
-    )
+    const result = response.data.result
+    if (result === 'SUCCESS' || result === 'ACCEPTED') {
+      core.notice(
+        'Snapshot successfully created at ' +
+          response.data.created_at.toString()
+      )
+    } else {
+      core.error(
+        `Snapshot creation failed with result: "${result}: ${response.data.message}"`
+      )
+    }
   } catch (error) {
     if (error instanceof RequestError) {
       core.error(
