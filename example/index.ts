@@ -1,3 +1,3 @@
-import { main } from './npm-detector'
+import { main } from './npm-detector.js'
 
 main()

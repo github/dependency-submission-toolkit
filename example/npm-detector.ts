@@ -1,14 +1,13 @@
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
-import { PackageURL } from 'packageurl-js'
-
 import {
-  PackageCache,
   BuildTarget,
   Package,
+  PackageCache,
   Snapshot,
   submitSnapshot
 } from '@github/dependency-submission-toolkit'
+import { PackageURL } from 'packageurl-js'
 
 // top-level structure from the output of 'npm list'
 type NpmPackage = { name: string; version: string; dependencies: Dependencies }
@@ -30,18 +29,21 @@ type Dependencies = { [name: string]: Dependency }
 export function parseNameAndNamespace(npmDepName: string): [string, string] {
   const namespaceAndName = npmDepName.split('/')
 
-  if (namespaceAndName.length == 2) {
-    return [
-      encodeURIComponent(namespaceAndName[0]),
-      encodeURIComponent(namespaceAndName[1])
-    ]
-  } else if (namespaceAndName.length == 1) {
-    return ['', encodeURIComponent(namespaceAndName[0])]
-  } else {
-    throw new Error(
-      `expectation violated: package '${npmDepName}' has more than one slash (/) in name`
-    )
+  if (namespaceAndName.length === 1) {
+    // biome-ignore lint/style/noNonNullAssertion: exist because of the if statement
+    return ['', encodeURIComponent(namespaceAndName[0]!)]
   }
+  if (namespaceAndName.length === 2) {
+    return [
+      // biome-ignore lint/style/noNonNullAssertion: exist because of the if statement
+      encodeURIComponent(namespaceAndName[0]!),
+      // biome-ignore lint/style/noNonNullAssertion: exist because of the if statement
+      encodeURIComponent(namespaceAndName[1]!)
+    ]
+  }
+  throw new Error(
+    `expectation violated: package '${npmDepName}' has more than one slash (/) in name`
+  )
 }
 
 /**
@@ -58,9 +60,11 @@ export function parseDependencies(
     const purl = new PackageURL('npm', namespace, name, dep.version, null, null)
 
     // if the package has already been added to the cache, return the package early
-    if (cache.hasPackage(purl)) return cache.package(purl)
+    if (cache.hasPackage(purl)) {
+      return cache.package(purl)
+    }
 
-    let pkgs = []
+    const pkgs = []
     // post-order traversal of the dependency tree with recursion.
     // recursion is not expected to blow the stack as dependency trees are
     // unlikely to have significant depth
@@ -89,11 +93,10 @@ export function parseDependencies(
 export function createBuildTarget(npmPackage: NpmPackage): BuildTarget {
   const cache = new PackageCache()
   const topLevelDependencies = parseDependencies(cache, npmPackage.dependencies)
-
   const buildTarget = new BuildTarget(npmPackage.name)
-  topLevelDependencies.forEach((dep) => {
+  for (const dep of topLevelDependencies) {
     buildTarget.addBuildDependency(dep)
-  })
+  }
   return buildTarget
 }
 
@@ -107,7 +110,7 @@ export async function main() {
   const npmPackageDirectory = core.getInput('npm-package-directory')
   const prodPackages = await exec.getExecOutput(
     'npm',
-    ['list', '--prod', '--all', '--json'],
+    ['list', '--all', '--json', '--omit', 'dev'],
     { cwd: npmPackageDirectory }
   )
   if (prodPackages.exitCode !== 0) {

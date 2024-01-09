@@ -1,11 +1,10 @@
-import { Context } from '@actions/github/lib/context'
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { Octokit } from '@octokit/rest'
+import { type Context } from '@actions/github/lib/context.js'
 import { RequestError } from '@octokit/request-error'
-import { PullRequestEvent } from '@octokit/webhooks-types'
+import { type PullRequestEvent } from '@octokit/webhooks-types'
 
-import { Manifest } from './manifest'
+import { Manifest } from './manifest.js'
 
 /*
 Core functionality for creating a snapshot of a project's dependencies.
@@ -18,7 +17,7 @@ Core functionality for creating a snapshot of a project's dependencies.
 export type Job = {
   correlator: string
   id: string
-  html_url?: string // eslint-disable-line camelcase
+  html_url?: string
 }
 
 /**
@@ -57,9 +56,8 @@ export function shaFromContext(context: Context): string {
   if (pullRequestEvents.includes(context.eventName)) {
     const pr = (context.payload as PullRequestEvent).pull_request
     return pr.head.sha
-  } else {
-    return context.sha
   }
+  return context.sha
 }
 
 /**
@@ -128,7 +126,7 @@ export class Snapshot {
     context: Context = github.context,
     job?: Job,
     date: Date = new Date(),
-    version: number = 0
+    version = 0
   ) {
     this.detector = detector
     this.version = version
@@ -189,7 +187,7 @@ export async function submitSnapshot(
       }
     )
     core.notice(
-      'Snapshot successfully created at ' + response.data.created_at.toString()
+      `Snapshot successfully created at ${response.data.created_at.toString()}`
     )
   } catch (error) {
     if (error instanceof RequestError) {

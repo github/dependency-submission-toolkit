@@ -1,5 +1,6 @@
 import { PackageURL } from 'packageurl-js'
-import { Package } from './package'
+
+import { Package } from './package.js'
 
 /**
  * Use PackageCache to define packages and the relationships between packages. You may
@@ -81,9 +82,8 @@ export class PackageCache {
     if (typeof identifier === 'string') {
       const purl = PackageURL.fromString(identifier)
       return this.database[purl.toString()]
-    } else {
-      return this.database[identifier.toString()]
     }
+    return this.database[identifier.toString()]
   }
 
   /**

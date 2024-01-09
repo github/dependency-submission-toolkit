@@ -1,10 +1,11 @@
 import { context } from '@actions/github'
+import { describe, expect, it } from 'vitest'
 
-import { Manifest } from './manifest'
-import { PackageCache } from './package-cache'
-import { shaFromContext, Snapshot } from './snapshot'
+import { Manifest } from './manifest.js'
+import { PackageCache } from './package-cache.js'
+import { Snapshot, shaFromContext } from './snapshot.js'
 
-function roundTripJSON(obj: any): object {
+function roundTripJSON(obj: unknown): object {
   return JSON.parse(JSON.stringify(obj))
 }
 
