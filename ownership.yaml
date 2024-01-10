@@ -9,7 +9,7 @@ ownership:
     description: 'A TypeScript library for creating dependency snapshots and submitting them to the dependency submission API.'
     maintainer: aaroncathcart
     exec_sponsor: nan-h
-    product_manager: jhutchings1
+    product_manager: jonjanego
     team_slack: dependency-graph
     qos: experimental
     tier: 3
