@@ -1,10 +1,10 @@
-import { Package } from './package'
+import { Package } from './package.js'
 
 /**
  * FileInfo specifies where the manifest or build-target are specified in the repository.
  */
 type FileInfo = {
-  source_location?: string // eslint-disable-line camelcase
+  source_location?: string
 }
 
 /**
@@ -52,8 +52,12 @@ class Dependency {
     scope?: DependencyScope
   ) {
     this.depPackage = depPackage
-    this.relationship = relationship
-    this.scope = scope
+    if (relationship !== undefined) {
+      this.relationship = relationship
+    }
+    if (scope !== undefined) {
+      this.scope = scope
+    }
   }
 
   /**
@@ -178,8 +182,8 @@ export class BuildTarget extends Manifest {
    */
   addBuildDependency(pkg: Package) {
     this.addDirectDependency(pkg, 'runtime')
-    pkg.dependencies.forEach((transDep) => {
+    for (const transDep of pkg.dependencies) {
       this.addIndirectDependency(transDep, 'runtime')
-    })
+    }
   }
 }

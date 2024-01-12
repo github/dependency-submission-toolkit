@@ -1,7 +1,8 @@
 name: 'build-test'
+
 on: # rebuild any PRs and main branch changes
   pull_request:
-   branches:
+    branches:
       - main
       - 'releases/*'
   push:
@@ -14,14 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # As of 2023-02-22, the ubuntu-latest image uses npm v8.3.1. This version
-      # has a bug that prevents loading dependency-submission-toolkit in the
-      # 'example/' project. npm v8.4.1 (same version in Codespace created on
-      # same date) is known to work. Not pinned to latest to avoid
-      # reproducibility issues.
-      - run: npm install npm@8.4.1 -g
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16
       - name: Install NPM dependencies
         run: npm ci
-      - run: npm install
       - name: Run all NPM build/test actions
-        run: npm rebuild && npm run all
+        run: npm run all
