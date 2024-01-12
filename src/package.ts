@@ -13,7 +13,7 @@ export class Package {
   /**
    * @type {Array<Package>}
    */
-  dependencies: Array<Package> // eslint-disable-line no-use-before-define
+  dependencies: Array<Package>
 
   /**
    * A Package can be constructed with a PackageURL or a string conforming to
@@ -48,7 +48,9 @@ export class Package {
    * @returns {Package}
    */
   dependsOnPackages(pkgs: Array<Package>): Package {
-    pkgs.forEach((pkg) => this.dependsOn(pkg))
+    for (const pkg of pkgs) {
+      this.dependsOn(pkg)
+    }
     return this
   }
 
@@ -112,8 +114,7 @@ export class Package {
     return (
       (matcher.namespace === undefined ||
         this.packageURL.namespace === matcher.namespace) &&
-      (matcher.name === undefined  ||
-        this.packageURL.name === matcher.name) &&
+      (matcher.name === undefined || this.packageURL.name === matcher.name) &&
       (matcher.version === undefined ||
         this.packageURL.version === matcher.version)
     )

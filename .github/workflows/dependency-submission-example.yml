@@ -1,6 +1,6 @@
 name: Example Dependency Submission
-on:
-  push
+
+on: push
 
 permissions:
   contents: write
@@ -9,21 +9,15 @@ jobs:
   example-submission:
     runs-on: ubuntu-latest
     steps:
-      - name: 'Checkout Repository'
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-      # As of 2023-02-22, the ubuntu-latest image uses npm v8.3.1. This version
-      # has a bug that prevents loading dependency-submission-toolkit in the
-      # 'example/' project. npm v8.4.1 (same version in Codespace created on
-      # same date) is known to work. Not pinned to latest to avoid
-      # reproducibility issues.
-      - run: npm install npm@8.4.1 -g
+        with:
+          node-version: 20
       - name: Install NPM dependencies
         run: npm ci
       - name: Run all NPM build/test actions
-        run: npm -w:example rebuild && npm run all -w:example
+        run: npm run --workspace example all
       - name: Run dependency submission
         uses: ./
-        id: example
         with:
           npm-package-directory: ./

@@ -1,7 +1,7 @@
-import { PackageCache } from './package-cache'
-import { Manifest, BuildTarget } from './manifest'
-import { Package } from './package'
-import { Snapshot, submitSnapshot } from './snapshot'
+import { BuildTarget, Manifest } from './manifest.js'
+import { PackageCache } from './package-cache.js'
+import { Package } from './package.js'
+import { Snapshot, submitSnapshot } from './snapshot.js'
 
 export {
   BuildTarget,

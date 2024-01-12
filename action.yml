@@ -10,5 +10,5 @@ inputs:
     required: true
     default: './'
 runs:
-  using: 'node16'
-  main: 'example/action-dist/index.js'
+  using: 'node20'
+  main: 'example/dist/index.js'
