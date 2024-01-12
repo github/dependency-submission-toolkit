@@ -196,9 +196,6 @@ export async function submitSnapshot(
         `Snapshot creation failed with result: "${result}: ${response.data.message}"`
       )
     }
-    core.notice(
-      `Snapshot successfully created at ${response.data.created_at.toString()}`
-    )
   } catch (error) {
     if (error instanceof RequestError) {
       core.error(
