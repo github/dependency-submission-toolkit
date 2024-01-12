@@ -189,8 +189,7 @@ export async function submitSnapshot(
     const result = response.data.result
     if (result === 'SUCCESS' || result === 'ACCEPTED') {
       core.notice(
-        'Snapshot successfully created at ' +
-          response.data.created_at.toString()
+        `Snapshot successfully created at ${response.data.created_at.toString()}`
       )
     } else {
       core.error(
