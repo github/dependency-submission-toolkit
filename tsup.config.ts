@@ -8,6 +8,6 @@ export default defineConfig({
   minify: true,
   sourcemap: true,
   splitting: true,
-  target: 'node16',
+  target: 'node20',
   treeshake: true
 })
