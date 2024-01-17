@@ -1,10 +1,11 @@
-import {
-  parseNameAndNamespace,
-  parseDependencies,
-  createBuildTarget
-} from './npm-detector'
-
 import { PackageCache } from '@github/dependency-submission-toolkit'
+import { describe, expect, test } from 'vitest'
+
+import {
+  createBuildTarget,
+  parseDependencies,
+  parseNameAndNamespace
+} from './npm-detector.js'
 
 describe('parseNameAndNamespace', () => {
   test('parses single name, no namespace', () => {
@@ -39,7 +40,7 @@ describe('parseDependencies', () => {
     const pkgs = parseDependencies(cache, dependencies)
 
     expect(pkgs).toHaveLength(1)
-    expect(pkgs[0].packageID()).toEqual('pkg:npm/foo@1.0')
+    expect(pkgs[0]?.packageID()).toEqual('pkg:npm/foo@1.0')
     expect(cache.countPackages()).toEqual(1)
   })
 
@@ -49,8 +50,8 @@ describe('parseDependencies', () => {
     const pkgs = parseDependencies(cache, dependencies)
 
     expect(pkgs).toHaveLength(2)
-    expect(pkgs[0].packageID()).toEqual('pkg:npm/foo@1.0')
-    expect(pkgs[1].packageID()).toEqual('pkg:npm/bar@2.0')
+    expect(pkgs[0]?.packageID()).toEqual('pkg:npm/foo@1.0')
+    expect(pkgs[1]?.packageID()).toEqual('pkg:npm/bar@2.0')
     expect(cache.countPackages()).toEqual(2)
   })
 
@@ -62,9 +63,9 @@ describe('parseDependencies', () => {
     const pkgs = parseDependencies(cache, dependencies)
 
     expect(pkgs).toHaveLength(1)
-    expect(pkgs[0].packageID()).toEqual('pkg:npm/foo@1.0')
-    expect(pkgs[0].packageDependencyIDs).toHaveLength(1)
-    expect(pkgs[0].packageDependencyIDs[0]).toEqual('pkg:npm/bar@2.0')
+    expect(pkgs[0]?.packageID()).toEqual('pkg:npm/foo@1.0')
+    expect(pkgs[0]?.packageDependencyIDs).toHaveLength(1)
+    expect(pkgs[0]?.packageDependencyIDs[0]).toEqual('pkg:npm/bar@2.0')
     expect(cache.countPackages()).toEqual(2)
   })
 })

@@ -1,6 +1,8 @@
 import { PackageURL } from 'packageurl-js'
-import { Package } from './package'
-import { PackageCache } from './package-cache'
+import { describe, expect, it } from 'vitest'
+
+import { PackageCache } from './package-cache.js'
+import { Package } from './package.js'
 
 const purl = 'pkg:npm/%40github/dependency-submission-toolkit@0.1.2'
 

@@ -1,27 +1,23 @@
 {
   "name": "@github/npm-dependency-submission-example",
-  "version": "1.0.0",
+  "private": true,
   "description": "[UNPUBLISHED PACKAGE!] Example using the Dependency Submission Toolkit and npm list",
-  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "all": "npm run type-check && npm run build && npm run test",
+    "build": "ncc build index.ts --source-map --license=LICENSE.txt --out dist",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "type-check": "tsc"
+  },
   "dependencies": {
     "@github/dependency-submission-toolkit": "file:../",
-    "packageurl-js": "^0.0.6"
+    "packageurl-js": "^1.2.1"
   },
-  "scripts": {
-    "build": "tsc",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "package": "ncc build --source-map --license licenses.txt --out action-dist",
-    "all": "npm run test && npm run build && npm run package"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/github/dependency-submission-toolkit.git"
-  },
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/github/dependency-submission-toolkit/issues"
-  },
-  "homepage": "https://github.com/github/dependency-submission-toolkit#readme"
+  "devDependencies": {
+    "@tsconfig/strictest": "^2.0.2",
+    "@vercel/ncc": "^0.38.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.3"
+  }
 }

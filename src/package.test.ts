@@ -1,5 +1,7 @@
 import { PackageURL } from 'packageurl-js'
-import { Package } from './package'
+import { describe, expect, it } from 'vitest'
+
+import { Package } from './package.js'
 
 describe('Package', () => {
   it('constructs a from Package URL-formatted string ', () => {
