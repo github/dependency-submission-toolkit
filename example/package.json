@@ -11,6 +11,7 @@
     "type-check": "tsc"
   },
   "dependencies": {
+    "@actions/exec": "^1.1.1",
     "@github/dependency-submission-toolkit": "file:../",
     "packageurl-js": "^1.2.1"
   },
