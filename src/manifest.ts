@@ -1,4 +1,4 @@
-import { Package } from './package.js'
+import type { Package } from './package.js'
 
 /**
  * FileInfo specifies where the manifest or build-target are specified in the repository.

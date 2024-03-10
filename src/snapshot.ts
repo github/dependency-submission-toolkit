@@ -1,10 +1,10 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { type Context } from '@actions/github/lib/context.js'
+import type { Context } from '@actions/github/lib/context.js'
 import { RequestError } from '@octokit/request-error'
-import { type PullRequestEvent } from '@octokit/webhooks-types'
+import type { PullRequestEvent } from '@octokit/webhooks-types'
 
-import { Manifest } from './manifest.js'
+import type { Manifest } from './manifest.js'
 
 /*
 Core functionality for creating a snapshot of a project's dependencies.
