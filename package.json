@@ -14,40 +14,56 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.cts",
-      "require": "./dist/index.cjs",
-      "import": "./dist/index.js"
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/index.d.ts",
+        "default": "./dist/commonjs/index.js"
+      }
     }
   },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": ["dist"],
-  "workspaces": ["example"],
+  "main": "./dist/commonjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/commonjs/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "workspaces": [
+    "example"
+  ],
   "scripts": {
-    "all": "npm run type-check && npm run build && npm run ci && npm run test",
-    "build": "tsup",
-    "ci": "biome ci .",
-    "format": "biome format --write .",
-    "lint": "biome lint --apply .",
+    "all": "npm run build && npm run check && npm run test",
+    "build": "tshy",
+    "check": "biome check",
+    "fix": "biome check --fix",
     "prepare": "npm run build",
     "test": "vitest run src",
-    "test:watch": "vitest watch src",
-    "type-check": "tsc"
+    "test:watch": "vitest watch src"
   },
   "dependencies": {
     "@actions/core": "^1.10.1",
     "@actions/github": "^6.0.0",
-    "@octokit/request-error": "^6.1.1",
-    "@octokit/webhooks-types": "^7.5.0",
+    "@octokit/webhooks-types": "^7.5.1",
     "packageurl-js": "^1.2.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.7.0",
+    "@biomejs/biome": "^1.8.3",
+    "@tsconfig/node20": "^20.1.4",
     "@tsconfig/strictest": "^2.0.5",
-    "@types/node": "^20.12.7",
-    "tsup": "^8.0.2",
-    "typescript": "^5.4.5",
-    "vitest": "^1.5.0"
+    "@types/node": "^20.14.10",
+    "tshy": "^3.0.2",
+    "typescript": "^5.5.3",
+    "vitest": "^2.0.1"
+  },
+  "tshy": {
+    "exclude": [
+      "./src/*.test.ts"
+    ],
+    "exports": {
+      ".": "./src/index.ts"
+    }
   }
 }

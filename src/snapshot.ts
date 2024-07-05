@@ -1,7 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import type { Context } from '@actions/github/lib/context.js'
-import { RequestError } from '@octokit/request-error'
 import type { PullRequestEvent } from '@octokit/webhooks-types'
 
 import type { Manifest } from './manifest.js'
@@ -197,16 +196,6 @@ export async function submitSnapshot(
       )
     }
   } catch (error) {
-    if (error instanceof RequestError) {
-      core.error(
-        `HTTP Status ${error.status} for request ${error.request.method} ${error.request.url}`
-      )
-      if (error.response) {
-        core.error(
-          `Response body:\n${JSON.stringify(error.response.data, undefined, 2)}`
-        )
-      }
-    }
     if (error instanceof Error) {
       core.error(error.message)
       if (error.stack) core.error(error.stack)

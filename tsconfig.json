@@ -1,11 +1,12 @@
 {
+  "extends": [
+    "@tsconfig/strictest/tsconfig.json",
+    "@tsconfig/node20/tsconfig.json"
+  ],
   "compilerOptions": {
-    "isolatedModules": true,
-    "module": "NodeNext",
-    "moduleDetection": "force",
-    "moduleResolution": "NodeNext",
-    "noEmit": true
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
   },
-  "exclude": ["dist", "example", "node_modules"],
-  "extends": "@tsconfig/strictest/tsconfig.json"
+  "exclude": ["dist", "example", "node_modules"]
 }
