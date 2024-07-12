@@ -14,6 +14,20 @@ Please note that this project is released with a [Contributor Code of
 Conduct][code-of-conduct]. By participating in this project you agree
 to abide by its terms.
 
+## Bug reports and other issues
+
+If you've encountered a problem, please let us know by [submitting an issue](https://github.com/github/dependency-submission-toolkit/issues/new)!
+
+## Enhancements and feature requests
+
+If you've got an idea for a new feature or a significant change to the code or its dependencies, please submit as [an issue](https://github.com/github/dependency-submission-toolkit/issues/new) so that the community can see it, and we can discuss it there. We may not be able to respond to every single issue, but will make a best effort!
+
+If you'd like to make a contribution yourself, we ask that before significant effort is put into code changes, that we have agreement that the change aligns with our strategy. Since this is a repository owned and primarily maintained by GitHub, we want to make sure that contributions are high quality, and that they maintain consistency with the rest of it's behavior.
+
+1. Create an [issue discussing the idea](https://github.com/github/dependency-submission-toolkit/issues/new), so that we can discuss it there.
+2. If we agree to incorporate the idea into the project, please write-up a high level summary of the approach that you plan to take so we can review
+
+
 ### Bootstrapping the project
 
 ```
