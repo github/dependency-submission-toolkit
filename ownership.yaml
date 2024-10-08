@@ -8,7 +8,7 @@ ownership:
     long_name: dependency-submission-toolkit
     description: 'A TypeScript library for creating dependency snapshots and submitting them to the dependency submission API.'
     maintainer: aaroncathcart
-    exec_sponsor: nan-h
+    exec_sponsor: aaroncathcart
     product_manager: jonjanego
     team_slack: dependency-graph
     qos: experimental
