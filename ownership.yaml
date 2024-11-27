@@ -7,7 +7,7 @@ ownership:
     kind: moda
     long_name: dependency-submission-toolkit
     description: 'A TypeScript library for creating dependency snapshots and submitting them to the dependency submission API.'
-    maintainer: aaroncathcart
+    maintainer: jovel
     exec_sponsor: nerdneha
     product_manager: jonjanego
     team_slack: dependency-graph
