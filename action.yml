@@ -1,7 +1,9 @@
 name: 'Example Dependency Submission Action'
 description: 'Example action using the dependency-submission-toolkit and npm'
 inputs:
-  token:
+  token:              - name: Maven Dependency Tree Dependency Submission
+                uses: advanced-security/maven-dependency-submission-action@v4.1.1
+            
     description: "GitHub Personal Access Token (PAT). Defaults to PAT provided by Action runner"
     required: false
     default: ${{ github.token }}
