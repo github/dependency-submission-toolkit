@@ -51,6 +51,7 @@
     "vitest": "^3.0.8"
   },
   "overrides": {
-    "esbuild": ">=0.25.0"
+    "esbuild": ">=0.25.0",
+    "@octokit/request-error@5.1.0": "5.1.1"
   }
 }
