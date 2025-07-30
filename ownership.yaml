@@ -8,7 +8,7 @@ ownership:
     long_name: dependency-submission-toolkit
     description: 'A TypeScript library for creating dependency snapshots and submitting them to the dependency submission API.'
     maintainer: jovel
-    exec_sponsor: nerdneha
+    exec_sponsor: aaroncathcart
     product_manager: ahpook
     team_slack: dependency-graph
     qos: experimental
