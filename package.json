@@ -22,8 +22,12 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
-  "workspaces": ["example"],
+  "files": [
+    "dist"
+  ],
+  "workspaces": [
+    "example"
+  ],
   "scripts": {
     "all": "npm run type-check && npm run build && npm run ci && npm run test",
     "build": "tsup",
@@ -40,7 +44,8 @@
     "@actions/github": "^6.0.0",
     "@octokit/request-error": "^6.1.1",
     "@octokit/webhooks-types": "^7.5.0",
-    "packageurl-js": "^1.2.1"
+    "packageurl-js": "^1.2.1",
+    "undici": "^5.29.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.7.0",
