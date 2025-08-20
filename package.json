@@ -22,12 +22,8 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
-  "workspaces": [
-    "example"
-  ],
+  "files": ["dist"],
+  "workspaces": ["example"],
   "scripts": {
     "all": "npm run type-check && npm run build && npm run ci && npm run test",
     "build": "tsup",
