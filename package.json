@@ -52,6 +52,7 @@
   },
   "overrides": {
     "esbuild": ">=0.25.0",
-    "@octokit/request-error@5.1.0": "5.1.1"
+    "@octokit/request-error@5.1.0": "5.1.1",
+    "undici": "5.29.0"
   }
 }
