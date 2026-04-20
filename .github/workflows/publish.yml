@@ -6,7 +6,6 @@ on:
 
 permissions:
   contents: read
-  packages: write
   id-token: write # for provenance and publish access
 
 jobs:
