@@ -13,7 +13,7 @@
   "dependencies": {
     "@actions/exec": "^1.1.1",
     "@github/dependency-submission-toolkit": "file:../",
-    "packageurl-js": "^1.2.1"
+    "packageurl-js": "^2.0.1"
   },
   "devDependencies": {
     "@tsconfig/strictest": "^2.0.2",
