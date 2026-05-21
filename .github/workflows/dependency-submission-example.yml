@@ -3,12 +3,14 @@ name: Example Dependency Submission
 on: push
 
 permissions:
+  # TODO(security): Confirm this example still requires contents: write for dependency submission.
   contents: write
 
 jobs:
   example-submission:
     runs-on: ubuntu-latest
     steps:
+      # TODO(security): Review pinning GitHub-owned actions to full commit SHAs once an update process is in place.
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v6
         with:

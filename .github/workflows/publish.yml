@@ -6,12 +6,14 @@ on:
 
 permissions:
   contents: read
+  # TODO(security): Human review required before changing release publish credentials/provenance behavior.
   id-token: write # for provenance and publish access
 
 jobs:
   publish-npm:
     runs-on: ubuntu-latest
     steps:
+      # TODO(security): Review pinning GitHub-owned actions to full commit SHAs once an update process is in place.
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v6
         with:

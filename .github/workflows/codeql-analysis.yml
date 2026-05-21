@@ -37,6 +37,7 @@ jobs:
         # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
 
     steps:
+    # TODO(security): Review pinning GitHub-owned actions to full commit SHAs once an update process is in place.
     - name: Checkout repository
       uses: actions/checkout@v5
 
