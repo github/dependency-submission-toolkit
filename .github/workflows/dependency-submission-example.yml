@@ -3,7 +3,6 @@ name: Example Dependency Submission
 on: push
 
 permissions:
-  # TODO(security): Confirm this example still requires contents: write for dependency submission.
   contents: write
 
 jobs:

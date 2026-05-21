@@ -6,7 +6,6 @@ on:
 
 permissions:
   contents: read
-  # TODO(security): Human review required before changing release publish credentials/provenance behavior.
   id-token: write # for provenance and publish access
 
 jobs:
