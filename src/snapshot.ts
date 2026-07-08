@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import type { Context } from '@actions/github/lib/context.js'
+type Context = typeof github.context
 import { RequestError } from '@octokit/request-error'
 import type { PullRequestEvent } from '@octokit/webhooks-types'
 
