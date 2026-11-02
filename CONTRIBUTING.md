@@ -64,27 +64,13 @@ Here are a few things you can do that will increase the likelihood of your pull 
 ### Testing npm publishing without a release
 
 The `Publish` workflow supports manual runs from the Actions tab. Its default
-`dry-run` mode builds and tests the package, prints the Node.js and npm versions,
-assigns a temporary prerelease version using the run ID and attempt, and runs
-`npm publish --dry-run`. This checks packaging without uploading a package,
-creating a Git tag, or changing npm dist-tags. It does not verify OIDC publishing
-authorization.
+`dry-run` mode builds and tests the package, assigns a temporary prerelease
+version, and checks packaging without publishing to npm.
 
-To verify OIDC authorization, explicitly select `canary` mode and supply an unused
-prerelease version, such as `2.0.8-oidc.1`. This performs a real npm publish under
-the `oidc-test` dist-tag without changing `latest` or creating a GitHub release.
-The npm version is consumed once published. Install that exact version to check
-the published package before cutting a stable release.
-
-The npm trusted publisher must authorize `github/dependency-submission-toolkit`
-and the workflow filename `publish.yml` for direct publishing. This workflow does
-not use an npm token or a GitHub environment. Ask Web Systems to confirm the npm
-configuration before a canary run. A new trusted publisher configuration must
-complete its first publish within npm's expiry window; recreate it if expired.
-See [npm's trusted publishing documentation](https://docs.npmjs.com/trusted-publishers/).
-
-Only the publishing job uses Node.js 24. This does not change the package's
-`node20` build target or declare a new minimum Node.js version for consumers.
+To test a real publish, select `canary` mode and supply an unused prerelease
+version, such as `2.0.8-oidc.1`. This publishes to npm under the `oidc-test`
+dist-tag without changing `latest` or creating a GitHub release. The npm version
+is consumed once published.
 
 ### Publishing a release
 
