@@ -61,6 +61,39 @@ Here are a few things you can do that will increase the likelihood of your pull 
 
 ## Cutting a new release
 
+### Testing npm publishing without a release
+
+The `Publish` workflow supports manual runs from the Actions tab. Its default
+`dry-run` mode builds and tests the package, prints the Node.js and npm versions,
+assigns a temporary prerelease version using the run ID and attempt, and runs
+`npm publish --dry-run`. This checks packaging without uploading a package,
+creating a Git tag, or changing npm dist-tags. It does not verify OIDC publishing
+authorization.
+
+To verify OIDC authorization, explicitly select `canary` mode and supply an unused
+prerelease version, such as `2.0.8-oidc.1`. This performs a real npm publish under
+the `oidc-test` dist-tag without changing `latest` or creating a GitHub release.
+The npm version is consumed once published. Install that exact version to check
+the published package before cutting a stable release.
+
+The npm trusted publisher must authorize `github/dependency-submission-toolkit`
+and the workflow filename `publish.yml` for direct publishing. This workflow does
+not use an npm token or a GitHub environment. Ask Web Systems to confirm the npm
+configuration before a canary run. A new trusted publisher configuration must
+complete its first publish within npm's expiry window; recreate it if expired.
+See [npm's trusted publishing documentation](https://docs.npmjs.com/trusted-publishers/).
+
+Only the publishing job uses Node.js 24. This does not change the package's
+`node20` build target or declare a new minimum Node.js version for consumers.
+
+The build bundles the ESM-only Actions dependencies and their Context types so
+both ESM and CommonJS consumers can load the package. These dependencies are
+development dependencies because their code ships in `dist`. Their versions are
+fixed by the lockfile at build time; updating them requires rebuilding and
+publishing the toolkit. The build also includes their license notices in `dist`.
+
+### Publishing a release
+
 1. Update the version number in [package.json](https://github.com/github/dependency-submission-toolkit/blob/main/package.json).
 1. Go to [Draft a new
    release](https://github.com/github/dependency-submission-toolkit/releases/new)
@@ -73,6 +106,9 @@ Here are a few things you can do that will increase the likelihood of your pull 
 5. Add your release notes. If this is a major version make sure to
    include a small description of the biggest changes in the new version.
 6. Click "Publish Release".
+
+Stable releases publish to npm's `latest` dist-tag. Prerelease versions publish
+to `next`, so they do not replace the stable version.
 
 ## Resources
 

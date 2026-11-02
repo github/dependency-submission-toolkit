@@ -36,16 +36,17 @@
     "type-check": "tsc"
   },
   "dependencies": {
-    "@actions/core": "^3.0.0",
-    "@actions/github": "^9.1.0",
-    "@octokit/request-error": "^7.1.0",
     "@octokit/webhooks-types": "^7.5.0",
     "packageurl-js": "^1.2.1"
   },
   "devDependencies": {
+    "@actions/core": "^3.0.0",
+    "@actions/github": "^9.1.0",
     "@biomejs/biome": "^1.7.0",
+    "@octokit/request-error": "^7.1.0",
     "@tsconfig/strictest": "^2.0.5",
     "@types/node": "^20.12.7",
+    "esbuild-plugin-license": "^1.2.3",
     "tsup": "^8.4.0",
     "typescript": "^5.4.5",
     "vitest": "^3.2.7"
