@@ -86,12 +86,6 @@ See [npm's trusted publishing documentation](https://docs.npmjs.com/trusted-publ
 Only the publishing job uses Node.js 24. This does not change the package's
 `node20` build target or declare a new minimum Node.js version for consumers.
 
-The build bundles the ESM-only Actions dependencies and their Context types so
-both ESM and CommonJS consumers can load the package. These dependencies are
-development dependencies because their code ships in `dist`. Their versions are
-fixed by the lockfile at build time; updating them requires rebuilding and
-publishing the toolkit. The build also includes their license notices in `dist`.
-
 ### Publishing a release
 
 1. Update the version number in [package.json](https://github.com/github/dependency-submission-toolkit/blob/main/package.json).
