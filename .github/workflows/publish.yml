@@ -46,7 +46,7 @@ jobs:
         run: |
           if [[ "$EVENT_NAME" == "release" ]]; then
             npm version "$RELEASE_TAG" --git-tag-version=false --allow-same-version
-            if [[ "$RELEASE_TAG" == *-* ]]; then
+            if [[ "${RELEASE_TAG%%+*}" == *-* ]]; then
               echo "tag=next" >> "$GITHUB_OUTPUT"
             else
               echo "tag=latest" >> "$GITHUB_OUTPUT"
@@ -69,7 +69,12 @@ jobs:
           NODE_AUTH_TOKEN: ""
       - name: Publish to npm using OIDC
         if: github.event_name == 'release' || inputs.mode == 'canary'
-        run: npm publish --provenance --access public --tag "$NPM_TAG"
+        run: |
+          if [[ "$NPM_TAG" == "latest" ]]; then
+            npm publish --provenance --access public
+          else
+            npm publish --provenance --access public --tag "$NPM_TAG"
+          fi
         env:
           NODE_AUTH_TOKEN: ""
           NPM_TAG: ${{ steps.version.outputs.tag }}
