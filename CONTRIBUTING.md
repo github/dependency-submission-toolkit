@@ -61,6 +61,19 @@ Here are a few things you can do that will increase the likelihood of your pull 
 
 ## Cutting a new release
 
+### Testing npm publishing without a release
+
+The `Publish` workflow supports manual runs from the Actions tab. Its default
+`dry-run` mode builds and tests the package, assigns a temporary prerelease
+version, and checks packaging without publishing to npm.
+
+To test a real publish, select `canary` mode and supply an unused prerelease
+version, such as `2.0.8-oidc.1`. This publishes to npm under the `oidc-test`
+dist-tag without changing `latest` or creating a GitHub release. The npm version
+is consumed once published.
+
+### Publishing a release
+
 1. Update the version number in [package.json](https://github.com/github/dependency-submission-toolkit/blob/main/package.json).
 1. Go to [Draft a new
    release](https://github.com/github/dependency-submission-toolkit/releases/new)
@@ -73,6 +86,9 @@ Here are a few things you can do that will increase the likelihood of your pull 
 5. Add your release notes. If this is a major version make sure to
    include a small description of the biggest changes in the new version.
 6. Click "Publish Release".
+
+Stable releases publish to npm's `latest` dist-tag. Prerelease versions publish
+to `next`, so they do not replace the stable version.
 
 ## Resources
 
