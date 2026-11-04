@@ -36,6 +36,13 @@ jobs:
           npm --version
       - run: npm ci
       - run: npm run all
+      - name: Inspect npm authentication configuration
+        run: |
+          node --test .github/scripts/*.test.mjs
+          node .github/scripts/npm-auth-diagnostics.mjs
+        env:
+          NODE_AUTH_TOKEN: ""
+          TMPDIR: ${{ runner.temp }}
       - name: Select package version and npm tag
         id: version
         env:
@@ -64,7 +71,7 @@ jobs:
           fi
       - name: Dry-run npm publish
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'dry-run'
-        run: npm publish --dry-run --provenance --access public --tag oidc-test
+        run: node .github/scripts/npm-oidc-dry-run.mjs
         env:
           NODE_AUTH_TOKEN: ""
       - name: Publish to npm using OIDC
