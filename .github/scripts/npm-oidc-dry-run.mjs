@@ -42,6 +42,13 @@ export function summarize(output) {
     )
     if (exchange) results.push(`OIDC: npm token exchange HTTP ${exchange[1]}`)
     if (line === 'npm error code ENEEDAUTH') results.push('npm: ENEEDAUTH')
+    if (
+      /^npm warn (publish )?This command requires you to be logged in to .* \(dry-run\)$/.test(
+        line
+      )
+    ) {
+      results.push('npm: authentication unavailable (dry-run only)')
+    }
   }
   return results
 }

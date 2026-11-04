@@ -1,6 +1,18 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
+test('reports missing authentication warnings without exposing registry values', async () => {
+  const { summarize } = await import('./npm-oidc-dry-run.mjs')
+  for (const prefix of ['', 'publish ']) {
+    assert.deepEqual(
+      summarize(
+        `npm warn ${prefix}This command requires you to be logged in to https://private-registry.example/ (dry-run)`
+      ),
+      ['npm: authentication unavailable (dry-run only)']
+    )
+  }
+})
+
 test('reports OIDC outcomes without echoing server messages or credentials', async () => {
   const { summarize } = await import('./npm-oidc-dry-run.mjs')
   const output = summarize(

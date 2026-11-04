@@ -37,6 +37,7 @@ jobs:
       - run: npm ci
       - run: npm run all
       - name: Inspect npm authentication configuration
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'dry-run'
         run: |
           node --test .github/scripts/*.test.mjs
           node .github/scripts/npm-auth-diagnostics.mjs
