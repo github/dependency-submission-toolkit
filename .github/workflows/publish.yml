@@ -41,7 +41,6 @@ jobs:
           node --test .github/scripts/*.test.mjs
           node .github/scripts/npm-auth-diagnostics.mjs
         env:
-          NODE_AUTH_TOKEN: ""
           TMPDIR: ${{ runner.temp }}
       - name: Select package version and npm tag
         id: version
@@ -72,8 +71,6 @@ jobs:
       - name: Dry-run npm publish
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'dry-run'
         run: node .github/scripts/npm-oidc-dry-run.mjs
-        env:
-          NODE_AUTH_TOKEN: ""
       - name: Publish to npm using OIDC
         if: github.event_name == 'release' || inputs.mode == 'canary'
         run: |
