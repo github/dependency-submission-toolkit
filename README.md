@@ -10,6 +10,9 @@ the API, the included dependencies appear in the repository's
 
 ## Installation
 
+Version 3 requires Node.js 24 or later. Both CommonJS (`require`) and ESM
+(`import`) are supported.
+
 ```
 npm install @github/dependency-submission-toolkit
 ```
