@@ -49,7 +49,7 @@ npm run test
 2. Make sure the tests pass on your machine: `npm run test`
 3. Create a new branch: `git checkout -b my-branch-name`
 4. Make your change, add tests, and make sure the tests still pass
-5. Make sure to build and package before pushing: `npm run all`
+5. Format changes with `npm run format`, then build and package before pushing with `npm run all`.
 6. Push to your fork and [submit a pull request][pr]
 7. Pat your self on the back and wait for your pull request to be reviewed and merged.
 
